@@ -2,6 +2,10 @@ package interpreter;
 
 import java.text.ParseException;
 
+import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.IntegerToken;
+import interpreter.tokens.Token;
+
 public class Interpreter {
 
 	private Token currentToken;
@@ -11,8 +15,8 @@ public class Interpreter {
 		this.scanner = new Scanner();
 	}
 
-	private void eat(String tokenType) throws ParseException {
-		if (currentToken.getType().equals(tokenType)) {
+	private void eat(String expected) throws ParseException {
+		if (currentToken.getType().equals(expected)) {
 			currentToken = scanner.getNextToken();
 		} else {
 			throwException();
@@ -24,27 +28,19 @@ public class Interpreter {
 		currentToken = scanner.getNextToken();
 
 		int left = Integer.parseInt(currentToken.getValue());
-		this.eat(Token.INTEGER);
+		this.eat(IntegerToken.TOKEN_TYPE);
 
-		String op = currentToken.getValue();
-		this.eat(Token.OPERATOR);
+		BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
+		this.eat(BinaryOperatorToken.TOKEN_TYPE);
 
 		int right = Integer.parseInt(currentToken.getValue());
-		this.eat(Token.INTEGER);
+		this.eat(IntegerToken.TOKEN_TYPE);
 
 		return calculate(left, op, right);
 	}
 
-	private Integer calculate(int left, String op, int right) throws ParseException {
-		switch (op) {
-		case ("+"):
-			return left + right;
-		case ("-"):
-			return left - right;
-		default:
-			throwException();
-			return null;
-		}
+	private int calculate(int left, BinaryOperatorToken op, int right) throws ParseException {
+		return op.calculate(left, right);
 	}
 
 	private void throwException() throws ParseException {

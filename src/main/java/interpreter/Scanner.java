@@ -3,6 +3,11 @@ package interpreter;
 import java.text.ParseException;
 import java.util.Arrays;
 
+import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.EndOfFileToken;
+import interpreter.tokens.IntegerToken;
+import interpreter.tokens.Token;
+
 public class Scanner {
 
 	private final static Character[] OPERATORS = { '+', '-' };
@@ -24,15 +29,15 @@ public class Scanner {
 			}
 
 			if (Character.isDigit(currentChar)) {
-				return new Token(Token.INTEGER, readNumber(text));
+				return new IntegerToken(readNumber(text));
 			}
 
 			if (isOperator(currentChar)) {
 				incrementPosition();
-				return new Token(Token.OPERATOR, String.valueOf(currentChar));
+				return BinaryOperatorToken.create(currentChar);
 			}
 		} catch (IndexOutOfBoundsException e) {
-			return new Token(Token.EOF, null);
+			return new EndOfFileToken(null);
 		}
 
 		throw new ParseException("Unparsable input", text.length());
