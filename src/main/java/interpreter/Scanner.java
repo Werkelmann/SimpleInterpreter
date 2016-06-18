@@ -1,12 +1,15 @@
 package interpreter;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import interpreter.tokens.BinaryOperatorToken;
 import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
 import interpreter.tokens.Token;
+import interpreter.tokens.TokenList;
 
 public class Scanner {
 
@@ -15,9 +18,17 @@ public class Scanner {
 	private String text;
 	private int position;
 
-	public void init(String text) {
+	public TokenList scan(String text) throws ParseException {
 		this.text = text;
-		position = 0;
+		this.position = 0;
+		List<Token> tokens = new ArrayList<>();
+		Token currentToken;
+		do {
+			currentToken = getNextToken();
+			tokens.add(currentToken);
+		} while (!(currentToken instanceof EndOfFileToken));
+
+		return new TokenList(tokens);
 	}
 
 	public Token getNextToken() throws ParseException {
