@@ -1,6 +1,7 @@
 package test.interpreter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
@@ -37,8 +38,8 @@ public class InterpreterTest {
 	@Test
 	public void testWhitespaces() {
 		String expr1 = "3 +4";
-		String expr2 = "9+ 9";
-		String expr3 = "4  +      2";
+		String expr2 = " 9+ 9";
+		String expr3 = "4  +      2 ";
 
 		try {
 			assertEquals(7, interpreter.expr(expr1));
@@ -82,8 +83,8 @@ public class InterpreterTest {
 	@Test
 	public void testExpression() {
 		String expr1 = "32 +    4";
-		String expr2 = "19 - 29";
-		String expr3 = "1234+ 2234";
+		String expr2 = "19 - 29 ";
+		String expr3 = "   1234+ 2234";
 
 		try {
 			assertEquals(36, interpreter.expr(expr1));
@@ -91,6 +92,17 @@ public class InterpreterTest {
 			assertEquals(3468, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail();
+		}
+	}
+
+	@Test
+	public void testForParseException() {
+		String expr1 = "32 +    a";
+		try {
+			interpreter.expr(expr1);
+			fail();
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
 		}
 	}
 
