@@ -106,4 +106,19 @@ public class InterpreterTest {
 		}
 	}
 
+	@Test
+	public void testExpressionsWithVariousLength() {
+		String expr1 = "32 + 4 - 8 - 22 + 2";
+		String expr2 = "3";
+		String expr3 = "1+2-3+4-5+6";
+
+		try {
+			assertEquals(8, interpreter.execute(expr1));
+			assertEquals(3, interpreter.execute(expr2));
+			assertEquals(5, interpreter.execute(expr3));
+		} catch (ParseException e) {
+			fail();
+		}
+	}
+
 }

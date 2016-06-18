@@ -3,6 +3,7 @@ package interpreter;
 import java.text.ParseException;
 
 import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
 import interpreter.tokens.Token;
 import interpreter.tokens.TokenList;
@@ -30,17 +31,20 @@ public class Parser {
 
 	public int expr() throws ParseException {
 		currentToken = tokens.getNextToken();
-
 		int left = Integer.parseInt(currentToken.getValue());
 		this.eat(IntegerToken.TOKEN_TYPE);
 
-		BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
-		this.eat(BinaryOperatorToken.TOKEN_TYPE);
+		while (!(currentToken instanceof EndOfFileToken)) {
+			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
+			this.eat(BinaryOperatorToken.TOKEN_TYPE);
 
-		int right = Integer.parseInt(currentToken.getValue());
-		this.eat(IntegerToken.TOKEN_TYPE);
+			int right = Integer.parseInt(currentToken.getValue());
+			this.eat(IntegerToken.TOKEN_TYPE);
 
-		return calculate(left, op, right);
+			left = calculate(left, op, right);
+		}
+
+		return left;
 	}
 
 	private int calculate(int left, BinaryOperatorToken op, int right) throws ParseException {
