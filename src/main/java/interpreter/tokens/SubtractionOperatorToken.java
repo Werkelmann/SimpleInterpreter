@@ -1,8 +1,8 @@
 package interpreter.tokens;
 
-public class MinusOperatorToken extends BinaryOperatorToken {
+public class SubtractionOperatorToken extends BinaryOperatorToken {
 
-	public MinusOperatorToken(String value) {
+	public SubtractionOperatorToken(String value) {
 		super("-");
 	}
 

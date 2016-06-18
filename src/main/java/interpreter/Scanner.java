@@ -13,7 +13,7 @@ import interpreter.tokens.TokenList;
 
 public class Scanner {
 
-	private final static Character[] OPERATORS = { '+', '-' };
+	private final static Character[] OPERATORS = { '+', '-', '*', '/' };
 
 	private String text;
 	private int position;

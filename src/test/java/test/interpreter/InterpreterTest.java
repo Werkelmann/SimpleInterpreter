@@ -51,14 +51,14 @@ public class InterpreterTest {
 	}
 
 	@Test
-	public void testMinus() {
+	public void testDifferentOperators() {
 		String expr1 = "3-2";
-		String expr2 = "9-9";
-		String expr3 = "4-2";
+		String expr2 = "9*9";
+		String expr3 = "4/2";
 
 		try {
 			assertEquals(1, interpreter.execute(expr1));
-			assertEquals(0, interpreter.execute(expr2));
+			assertEquals(81, interpreter.execute(expr2));
 			assertEquals(2, interpreter.execute(expr3));
 		} catch (ParseException e) {
 			fail();
