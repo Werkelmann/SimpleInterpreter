@@ -21,7 +21,10 @@ public class TokenList {
 	}
 
 	public Token getNextToken() {
-		return tokens.get(position++);
+		if (position < tokens.size()) {
+			return tokens.get(position++);
+		}
+		return tokens.get(tokens.size() - 1);
 	}
 
 	public boolean hasNext() {

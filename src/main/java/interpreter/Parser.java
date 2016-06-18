@@ -17,8 +17,13 @@ public class Parser {
 	public int parse(TokenList tokens) throws ParseException {
 		this.tokens = tokens;
 		this.setPosition(0);
+		this.currentToken = tokens.getNextToken();
 
-		return expr();
+		try {
+			return expr();
+		} catch (NumberFormatException e) {
+			throw new ParseException("Failure at position " + position, position);
+		}
 	}
 
 	private void eat(String expected) throws ParseException {
@@ -29,22 +34,22 @@ public class Parser {
 		}
 	}
 
-	public int expr() throws ParseException {
-		currentToken = tokens.getNextToken();
-		int left = Integer.parseInt(currentToken.getValue());
+	public int term() throws ParseException {
+		int result = Integer.parseInt(currentToken.getValue());
 		this.eat(IntegerToken.TOKEN_TYPE);
+		return result;
+	}
 
+	public int expr() throws ParseException {
+		int result = term();
 		while (!(currentToken instanceof EndOfFileToken)) {
 			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
 			this.eat(BinaryOperatorToken.TOKEN_TYPE);
 
-			int right = Integer.parseInt(currentToken.getValue());
-			this.eat(IntegerToken.TOKEN_TYPE);
-
-			left = calculate(left, op, right);
+			result = calculate(result, op, term());
 		}
 
-		return left;
+		return result;
 	}
 
 	private int calculate(int left, BinaryOperatorToken op, int right) throws ParseException {

@@ -97,9 +97,34 @@ public class InterpreterTest {
 
 	@Test
 	public void testForParseException() {
-		String expr1 = "32 +    a";
+		String expr1 = "32 + a";
 		try {
 			interpreter.execute(expr1);
+			fail();
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
+			assertEquals(5, e.getErrorOffset());
+		}
+
+		String expr2 = "32 +";
+		try {
+			interpreter.execute(expr2);
+			fail();
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
+		}
+
+		String expr3 = "+";
+		try {
+			interpreter.execute(expr3);
+			fail();
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
+		}
+
+		String expr4 = "";
+		try {
+			interpreter.execute(expr4);
 			fail();
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
