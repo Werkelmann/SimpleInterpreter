@@ -36,15 +36,11 @@ public class Parser {
 			currentToken = tokens.getNextToken();
 			return true;
 		} else {
-			// throw new ParseException(
-			// "Wrong syntax at " + tokens.getPosition() + ". Found: " +
-			// currentToken + " Expected: " + expected,
-			// tokens.getPosition());
 			return false;
 		}
 	}
 
-	public int expr() throws ParseException {
+	private int expr() throws ParseException {
 		int result = term();
 		while (isExprOperator(currentToken.getValue())) {
 			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
@@ -60,7 +56,7 @@ public class Parser {
 		return (value != null && (value.equals("+") || value.equals("-")));
 	}
 
-	public int term() throws ParseException {
+	private int term() throws ParseException {
 		int result = factor();
 		while (isTermOperator(currentToken.getValue())) {
 			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
@@ -76,7 +72,7 @@ public class Parser {
 		return (value != null && (value.equals("*") || value.equals("/")));
 	}
 
-	public int factor() throws ParseException {
+	private int factor() throws ParseException {
 		int result;
 		Token temp = currentToken;
 		if (this.eat(IntegerToken.TOKEN_TYPE)) {
