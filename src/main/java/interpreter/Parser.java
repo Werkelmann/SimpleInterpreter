@@ -93,7 +93,4 @@ public class Parser {
 		throw new ParseException("Error at Position " + tokens.getPosition(), tokens.getPosition());
 	}
 
-	private int calculate(int left, BinaryOperatorToken op, int right) throws ParseException {
-		return op.calculate(left, right);
-	}
 }

@@ -47,7 +47,7 @@ public class Scanner {
 
 			if (isOperator(currentChar)) {
 				incrementPosition();
-				return BinaryOperatorToken.create(currentChar);
+				return new BinaryOperatorToken(String.valueOf(currentChar));
 			}
 
 			if (isBracket(currentChar)) {
