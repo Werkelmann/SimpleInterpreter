@@ -164,6 +164,7 @@ public class InterpreterTest {
 		String expr1 = "11 - (2 - 1)";
 		String expr2 = "(100 - 2) * 3";
 		String expr3 = "(3)";
+		String expr6 = "(3+4) * ((12 / 4) * 3)";
 
 		String expr4 = "(3";
 		String expr5 = "4)";
@@ -172,6 +173,7 @@ public class InterpreterTest {
 			assertEquals(10, interpreter.execute(expr1));
 			assertEquals(294, interpreter.execute(expr2));
 			assertEquals(3, interpreter.execute(expr3));
+			assertEquals(63, interpreter.execute(expr6));
 		} catch (ParseException e) {
 			fail("ParseException");
 		}
