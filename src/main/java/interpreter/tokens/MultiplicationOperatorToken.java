@@ -3,7 +3,7 @@ package interpreter.tokens;
 public class MultiplicationOperatorToken extends BinaryOperatorToken {
 
 	public MultiplicationOperatorToken(String value) {
-		super(value);
+		super("*");
 	}
 
 	@Override

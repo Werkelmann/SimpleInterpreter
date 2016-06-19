@@ -51,7 +51,7 @@ public class Scanner {
 			return new EndOfFileToken(null);
 		}
 
-		throw new ParseException("Unparsable input", position);
+		throw new ParseException("Failure at scanning", position);
 	}
 
 	private boolean isOperator(Character currentChar) {

@@ -31,7 +31,7 @@ public class InterpreterTest {
 			assertEquals(18, interpreter.execute(expr2));
 			assertEquals(6, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
 		}
 	}
 
@@ -46,7 +46,7 @@ public class InterpreterTest {
 			assertEquals(18, interpreter.execute(expr2));
 			assertEquals(6, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
 		}
 	}
 
@@ -61,7 +61,7 @@ public class InterpreterTest {
 			assertEquals(81, interpreter.execute(expr2));
 			assertEquals(2, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
 		}
 	}
 
@@ -76,7 +76,7 @@ public class InterpreterTest {
 			assertEquals(48, interpreter.execute(expr2));
 			assertEquals(1236, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
 		}
 	}
 
@@ -91,7 +91,7 @@ public class InterpreterTest {
 			assertEquals(-10, interpreter.execute(expr2));
 			assertEquals(3468, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
 		}
 	}
 
@@ -100,7 +100,7 @@ public class InterpreterTest {
 		String expr1 = "32 + a";
 		try {
 			interpreter.execute(expr1);
-			fail();
+			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
 			assertEquals(5, e.getErrorOffset());
@@ -109,7 +109,7 @@ public class InterpreterTest {
 		String expr2 = "32 +";
 		try {
 			interpreter.execute(expr2);
-			fail();
+			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
 		}
@@ -117,7 +117,7 @@ public class InterpreterTest {
 		String expr3 = "+";
 		try {
 			interpreter.execute(expr3);
-			fail();
+			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
 		}
@@ -125,7 +125,7 @@ public class InterpreterTest {
 		String expr4 = "";
 		try {
 			interpreter.execute(expr4);
-			fail();
+			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
 		}
@@ -142,7 +142,20 @@ public class InterpreterTest {
 			assertEquals(3, interpreter.execute(expr2));
 			assertEquals(5, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail();
+			fail("ParseException");
+		}
+	}
+
+	@Test
+	public void testPrecedences() {
+		String expr1 = "9 + 4 / 4";
+		String expr2 = "100 - 2 * 30";
+
+		try {
+			assertEquals(10, interpreter.execute(expr1));
+			assertEquals(40, interpreter.execute(expr2));
+		} catch (ParseException e) {
+			fail("ParseException");
 		}
 	}
 

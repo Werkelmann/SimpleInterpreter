@@ -16,4 +16,11 @@ public class Interpreter {
 		return parser.parse(scanner.scan(input));
 	}
 
+	public static void main(String[] args) throws ParseException {
+		Interpreter i = new Interpreter();
+		for (String arg : args) {
+			System.out.println(i.execute(arg));
+		}
+	}
+
 }

@@ -3,7 +3,7 @@ package interpreter.tokens;
 public class DivisionOperatorToken extends BinaryOperatorToken {
 
 	public DivisionOperatorToken(String value) {
-		super(value);
+		super("/");
 	}
 
 	@Override
