@@ -2,6 +2,9 @@ package interpreter;
 
 import java.text.ParseException;
 
+import interpreter.ast.Ast;
+import interpreter.ast.BinaryOperationNode;
+import interpreter.ast.IntegerLeaf;
 import interpreter.tokens.BinaryOperatorToken;
 import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
@@ -15,12 +18,12 @@ public class Parser {
 	private TokenList tokens;
 	private Token currentToken;
 
-	public int parse(TokenList tokens) throws ParseException {
+	public Ast parse(TokenList tokens) throws ParseException {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
 		try {
-			int result = expr();
+			Ast result = expr();
 			if (currentToken instanceof EndOfFileToken) {
 				return result;
 			}
@@ -40,13 +43,13 @@ public class Parser {
 		}
 	}
 
-	private int expr() throws ParseException {
-		int result = term();
+	private Ast expr() throws ParseException {
+		Ast result = term();
 		while (isExprOperator(currentToken.getValue())) {
 			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
 			this.eat(BinaryOperatorToken.TOKEN_TYPE);
 
-			result = calculate(result, op, term());
+			result = new BinaryOperationNode(result, op, term());
 		}
 
 		return result;
@@ -56,13 +59,13 @@ public class Parser {
 		return (value != null && (value.equals("+") || value.equals("-")));
 	}
 
-	private int term() throws ParseException {
-		int result = factor();
+	private Ast term() throws ParseException {
+		Ast result = factor();
 		while (isTermOperator(currentToken.getValue())) {
 			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
 			this.eat(BinaryOperatorToken.TOKEN_TYPE);
 
-			result = calculate(result, op, factor());
+			result = new BinaryOperationNode(result, op, factor());
 		}
 
 		return result;
@@ -72,11 +75,11 @@ public class Parser {
 		return (value != null && (value.equals("*") || value.equals("/")));
 	}
 
-	private int factor() throws ParseException {
-		int result;
+	private Ast factor() throws ParseException {
+		Ast result;
 		Token temp = currentToken;
 		if (this.eat(IntegerToken.TOKEN_TYPE)) {
-			result = Integer.parseInt(temp.getValue());
+			result = new IntegerLeaf(Integer.parseInt(temp.getValue()));
 			return result;
 		} else if (this.eat(RoundOpeningBracketToken.TOKEN_TYPE)) {
 			result = expr();

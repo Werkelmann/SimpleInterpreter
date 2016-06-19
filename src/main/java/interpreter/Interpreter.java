@@ -6,14 +6,16 @@ public class Interpreter {
 
 	private Scanner scanner;
 	private Parser parser;
+	private AstTraverser traverser;
 
 	public Interpreter() {
 		this.scanner = new Scanner();
 		this.parser = new Parser();
+		traverser = new AstTraverser();
 	}
 
 	public int execute(String input) throws ParseException {
-		return parser.parse(scanner.scan(input));
+		return traverser.calculate(parser.parse(scanner.scan(input)));
 	}
 
 	public static void main(String[] args) throws ParseException {
