@@ -159,4 +159,36 @@ public class InterpreterTest {
 		}
 	}
 
+	@Test
+	public void testRoundBrackets() {
+		String expr1 = "11 - (2 - 1)";
+		String expr2 = "(100 - 2) * 3";
+		String expr3 = "(3)";
+
+		String expr4 = "(3";
+		String expr5 = "4)";
+
+		try {
+			assertEquals(10, interpreter.execute(expr1));
+			assertEquals(294, interpreter.execute(expr2));
+			assertEquals(3, interpreter.execute(expr3));
+		} catch (ParseException e) {
+			fail("ParseException");
+		}
+
+		try {
+			interpreter.execute(expr4);
+			fail("Missing closing bracket not reckognized");
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
+		}
+
+		try {
+			interpreter.execute(expr5);
+			fail("Missing opening bracket not reckognized");
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
+		}
+	}
+
 }

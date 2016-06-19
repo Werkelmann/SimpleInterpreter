@@ -3,7 +3,10 @@ package interpreter;
 import java.text.ParseException;
 
 import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
+import interpreter.tokens.RoundClosingBracketToken;
+import interpreter.tokens.RoundOpeningBracketToken;
 import interpreter.tokens.Token;
 import interpreter.tokens.TokenList;
 
@@ -17,19 +20,27 @@ public class Parser {
 		this.currentToken = tokens.getNextToken();
 
 		try {
-			return expr();
-		} catch (NumberFormatException e) {
-			throw new ParseException("Failure at position " + tokens.getPosition(), tokens.getPosition());
+			int result = expr();
+			if (currentToken instanceof EndOfFileToken) {
+				return result;
+			}
+			throw new Exception("Expected: EndOfFile Found: " + currentToken);
+		} catch (Exception e) {
+			throw new ParseException("Failure at position " + tokens.getPosition() + " " + e.getMessage(),
+					tokens.getPosition());
 		}
 	}
 
-	private void eat(String expected) throws ParseException {
+	private boolean eat(String expected) throws ParseException {
 		if (currentToken.getType().equals(expected)) {
 			currentToken = tokens.getNextToken();
+			return true;
 		} else {
-			throw new ParseException(
-					"Wrong syntax at " + tokens.getPosition() + ". Found: " + currentToken + " Expected: " + expected,
-					tokens.getPosition());
+			// throw new ParseException(
+			// "Wrong syntax at " + tokens.getPosition() + ". Found: " +
+			// currentToken + " Expected: " + expected,
+			// tokens.getPosition());
+			return false;
 		}
 	}
 
@@ -66,9 +77,21 @@ public class Parser {
 	}
 
 	public int factor() throws ParseException {
-		int result = Integer.parseInt(currentToken.getValue());
-		this.eat(IntegerToken.TOKEN_TYPE);
-		return result;
+		int result;
+		Token temp = currentToken;
+		if (this.eat(IntegerToken.TOKEN_TYPE)) {
+			result = Integer.parseInt(temp.getValue());
+			return result;
+		} else if (this.eat(RoundOpeningBracketToken.TOKEN_TYPE)) {
+			result = expr();
+			if (!this.eat(RoundClosingBracketToken.TOKEN_TYPE)) {
+				throw new ParseException(
+						"Error at Position " + tokens.getPosition() + ". Missing round closing bracket!",
+						tokens.getPosition());
+			}
+			return result;
+		}
+		throw new ParseException("Error at Position " + tokens.getPosition(), tokens.getPosition());
 	}
 
 	private int calculate(int left, BinaryOperatorToken op, int right) throws ParseException {

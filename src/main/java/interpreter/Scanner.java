@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.BracketToken;
 import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
 import interpreter.tokens.Token;
@@ -14,6 +15,7 @@ import interpreter.tokens.TokenList;
 public class Scanner {
 
 	private final static Character[] OPERATORS = { '+', '-', '*', '/' };
+	private final static Character[] BRACKETS = { '(', ')' };
 
 	private String text;
 	private int position;
@@ -47,6 +49,11 @@ public class Scanner {
 				incrementPosition();
 				return BinaryOperatorToken.create(currentChar);
 			}
+
+			if (isBracket(currentChar)) {
+				incrementPosition();
+				return BracketToken.create(currentChar);
+			}
 		} catch (IndexOutOfBoundsException e) {
 			return new EndOfFileToken(null);
 		}
@@ -56,6 +63,10 @@ public class Scanner {
 
 	private boolean isOperator(Character currentChar) {
 		return Arrays.asList(Scanner.OPERATORS).contains(currentChar);
+	}
+
+	private boolean isBracket(Character currentChar) {
+		return Arrays.asList(Scanner.BRACKETS).contains(currentChar);
 	}
 
 	private String readNumber(String text) {
