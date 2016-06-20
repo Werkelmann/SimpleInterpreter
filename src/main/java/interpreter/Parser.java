@@ -5,9 +5,10 @@ import java.text.ParseException;
 import interpreter.ast.Ast;
 import interpreter.ast.BinaryOperationNode;
 import interpreter.ast.IntegerLeaf;
-import interpreter.tokens.BinaryOperatorToken;
+import interpreter.ast.UnaryOperationNode;
 import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
+import interpreter.tokens.OperatorToken;
 import interpreter.tokens.RoundClosingBracketToken;
 import interpreter.tokens.RoundOpeningBracketToken;
 import interpreter.tokens.Token;
@@ -46,8 +47,8 @@ public class Parser {
 	private Ast expr() throws ParseException {
 		Ast result = term();
 		while (isExprOperator(currentToken.getValue())) {
-			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
-			this.eat(BinaryOperatorToken.TOKEN_TYPE);
+			OperatorToken op = (OperatorToken) currentToken;
+			this.eat(OperatorToken.TOKEN_TYPE);
 
 			result = new BinaryOperationNode(result, op, term());
 		}
@@ -62,8 +63,8 @@ public class Parser {
 	private Ast term() throws ParseException {
 		Ast result = factor();
 		while (isTermOperator(currentToken.getValue())) {
-			BinaryOperatorToken op = (BinaryOperatorToken) currentToken;
-			this.eat(BinaryOperatorToken.TOKEN_TYPE);
+			OperatorToken op = (OperatorToken) currentToken;
+			this.eat(OperatorToken.TOKEN_TYPE);
 
 			result = new BinaryOperationNode(result, op, factor());
 		}
@@ -78,6 +79,9 @@ public class Parser {
 	private Ast factor() throws ParseException {
 		Ast result;
 		Token temp = currentToken;
+		if (this.eat(OperatorToken.TOKEN_TYPE)) {
+			return new UnaryOperationNode(temp.getValue(), this.factor());
+		}
 		if (this.eat(IntegerToken.TOKEN_TYPE)) {
 			result = new IntegerLeaf(Integer.parseInt(temp.getValue()));
 			return result;

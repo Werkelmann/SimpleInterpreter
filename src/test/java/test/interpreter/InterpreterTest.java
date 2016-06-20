@@ -160,6 +160,21 @@ public class InterpreterTest {
 	}
 
 	@Test
+	public void testUnaryOperator() {
+		String expr1 = "-9 + 4";
+		String expr2 = "+100 - 2 * 30";
+		String expr3 = "-2";
+
+		try {
+			assertEquals(-5, interpreter.execute(expr1));
+			assertEquals(40, interpreter.execute(expr2));
+			assertEquals(-2, interpreter.execute(expr3));
+		} catch (ParseException e) {
+			fail("ParseException");
+		}
+	}
+
+	@Test
 	public void testRoundBrackets() {
 		String expr1 = "11 - (2 - 1)";
 		String expr2 = "(100 - 2) * 3";

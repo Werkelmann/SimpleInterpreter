@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import interpreter.ast.Ast;
 import interpreter.ast.BinaryOperationNode;
 import interpreter.ast.IntegerLeaf;
+import interpreter.ast.UnaryOperationNode;
 
 public class AstVisitor {
 
@@ -40,6 +41,18 @@ public class AstVisitor {
 
 	public int visitIntegerLeaf(Ast node) {
 		return ((IntegerLeaf) node).getValue();
+	}
+
+	public int visitUnaryOperationNode(Ast node) throws Exception {
+		UnaryOperationNode unNode = (UnaryOperationNode) node;
+		switch (unNode.getValue()) {
+		case ("+"):
+			return visit(unNode.getExpr());
+		case ("-"):
+			return -visit(unNode.getExpr());
+		default:
+			throw new Exception("Unknown operator " + unNode.getValue());
+		}
 	}
 
 }

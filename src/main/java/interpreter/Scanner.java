@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import interpreter.tokens.BinaryOperatorToken;
+import interpreter.tokens.OperatorToken;
 import interpreter.tokens.BracketToken;
 import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IntegerToken;
@@ -47,7 +47,7 @@ public class Scanner {
 
 			if (isOperator(currentChar)) {
 				incrementPosition();
-				return new BinaryOperatorToken(String.valueOf(currentChar));
+				return new OperatorToken(String.valueOf(currentChar));
 			}
 
 			if (isBracket(currentChar)) {
