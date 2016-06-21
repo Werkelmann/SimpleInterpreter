@@ -12,7 +12,7 @@ import interpreter.tokens.EndOfFileToken;
 import interpreter.tokens.IdentifierToken;
 import interpreter.tokens.IntegerToken;
 import interpreter.tokens.OperatorToken;
-import interpreter.tokens.SemikolonToken;
+import interpreter.tokens.SemicolonToken;
 import interpreter.tokens.Token;
 import interpreter.tokens.TokenList;
 
@@ -114,7 +114,7 @@ public class Scanner {
 	private Token createSignToken(Character currentChar) throws ParseException {
 		switch (currentChar) {
 		case (';'):
-			return new SemikolonToken(null);
+			return new SemicolonToken(null);
 		case ('.'):
 			return new DotToken(null);
 		default:

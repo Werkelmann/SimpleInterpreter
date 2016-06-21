@@ -13,8 +13,9 @@ import interpreter.tokens.AssignToken;
 import interpreter.tokens.DotToken;
 import interpreter.tokens.IdentifierToken;
 import interpreter.tokens.IntegerToken;
-import interpreter.tokens.SemikolonToken;
+import interpreter.tokens.SemicolonToken;
 import interpreter.tokens.Token;
+import interpreter.tokens.TokenList;
 
 public class ScannerTest {
 
@@ -65,7 +66,7 @@ public class ScannerTest {
 
 		try {
 			Token t1 = scan(id1);
-			assertTrue(t1 instanceof SemikolonToken);
+			assertTrue(t1 instanceof SemicolonToken);
 			Token t2 = scan(id2);
 			assertTrue(t2 instanceof DotToken);
 			Token t3 = scan(id3);
@@ -74,6 +75,30 @@ public class ScannerTest {
 			fail(e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void testLongerExpression() {
+		try {
+			String input = "BEGIN a := 2; END.";
+			TokenList tokens = scanner.scan(input);
+			Token t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("BEGIN"));
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("a"));
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof AssignToken);
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof IntegerToken && Integer.valueOf(t1.getValue()) == 2);
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof SemicolonToken);
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("END"));
+			t1 = tokens.getNextToken();
+			assertTrue(t1 instanceof DotToken);
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	private Token scan(String input) throws ParseException {
