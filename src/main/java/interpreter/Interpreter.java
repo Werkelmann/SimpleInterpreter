@@ -11,7 +11,7 @@ public class Interpreter {
 	public Interpreter() {
 		this.scanner = new Scanner();
 		this.parser = new Parser();
-		visitor = new AstVisitor();
+		this.visitor = new AstVisitor();
 	}
 
 	public int execute(String input) throws ParseException {

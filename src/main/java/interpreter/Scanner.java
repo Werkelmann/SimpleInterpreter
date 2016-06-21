@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import interpreter.tokens.OperatorToken;
+import interpreter.tokens.AssignToken;
 import interpreter.tokens.BracketToken;
+import interpreter.tokens.DotToken;
 import interpreter.tokens.EndOfFileToken;
+import interpreter.tokens.IdentifierToken;
 import interpreter.tokens.IntegerToken;
+import interpreter.tokens.OperatorToken;
+import interpreter.tokens.SemikolonToken;
 import interpreter.tokens.Token;
 import interpreter.tokens.TokenList;
 
@@ -16,6 +20,7 @@ public class Scanner {
 
 	private final static Character[] OPERATORS = { '+', '-', '*', '/' };
 	private final static Character[] BRACKETS = { '(', ')' };
+	private final static Character[] SPECIAL_SIGNS = { ';', '.' };
 
 	private String text;
 	private int position;
@@ -34,28 +39,46 @@ public class Scanner {
 	}
 
 	public Token getNextToken() throws ParseException {
-		try {
+		if (isPositionInRange()) {
 			Character currentChar = text.charAt(position);
-			while (Character.isWhitespace(currentChar)) {
-				incrementPosition();
-				currentChar = text.charAt(position);
-			}
+			return getToken(currentChar);
+		}
+		return new EndOfFileToken(null);
+	}
 
-			if (Character.isDigit(currentChar)) {
-				return new IntegerToken(readNumber(text));
-			}
+	public Token getToken(Character currentChar) throws ParseException {
+		while (Character.isWhitespace(currentChar)) {
+			incrementPosition();
+			currentChar = text.charAt(position);
+		}
 
-			if (isOperator(currentChar)) {
-				incrementPosition();
-				return new OperatorToken(String.valueOf(currentChar));
-			}
+		if (Character.isLetter(currentChar)) {
+			return new IdentifierToken(readString(c -> Character.isLetter(c)));
+		}
 
-			if (isBracket(currentChar)) {
-				incrementPosition();
-				return BracketToken.create(currentChar);
-			}
-		} catch (IndexOutOfBoundsException e) {
-			return new EndOfFileToken(null);
+		if (Character.isDigit(currentChar)) {
+			return new IntegerToken(readString(c -> Character.isDigit(c)));
+		}
+
+		if (isOperator(currentChar)) {
+			incrementPosition();
+			return new OperatorToken(String.valueOf(currentChar));
+		}
+
+		if (isBracket(currentChar)) {
+			incrementPosition();
+			return BracketToken.create(currentChar);
+		}
+
+		if (isSpecialSign(currentChar)) {
+			incrementPosition();
+			return createSignToken(currentChar);
+		}
+
+		if (currentChar.equals(':') && peek().equals('=')) {
+			incrementPosition();
+			incrementPosition();
+			return new AssignToken(null);
 		}
 
 		throw new ParseException("Failure at scanning", position);
@@ -69,10 +92,14 @@ public class Scanner {
 		return Arrays.asList(Scanner.BRACKETS).contains(currentChar);
 	}
 
-	private String readNumber(String text) {
+	private boolean isSpecialSign(Character currentChar) {
+		return Arrays.asList(Scanner.SPECIAL_SIGNS).contains(currentChar);
+	}
+
+	private String readString(CharCriteria criteria) {
 		StringBuilder number = new StringBuilder();
 		char character = text.charAt(position);
-		while (Character.isDigit(character)) {
+		while (criteria.match(character)) {
 			number.append(character);
 			incrementPosition();
 			if (isPositionInRange()) {
@@ -84,12 +111,28 @@ public class Scanner {
 		return number.toString();
 	}
 
+	private Token createSignToken(Character currentChar) throws ParseException {
+		switch (currentChar) {
+		case (';'):
+			return new SemikolonToken(null);
+		case ('.'):
+			return new DotToken(null);
+		default:
+			throw new ParseException("Unexpected char at " + position + ". Found: " + currentChar + " Expected: "
+					+ SPECIAL_SIGNS.toString(), position);
+		}
+	}
+
 	private void incrementPosition() {
 		this.position += 1;
 	}
 
 	private boolean isPositionInRange() {
 		return position <= text.length() - 1;
+	}
+
+	private Character peek() {
+		return text.charAt(++position);
 	}
 
 }
