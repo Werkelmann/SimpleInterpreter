@@ -31,7 +31,7 @@ public class InterpreterTest {
 			assertEquals(18, interpreter.execute(expr2));
 			assertEquals(6, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -46,7 +46,7 @@ public class InterpreterTest {
 			assertEquals(18, interpreter.execute(expr2));
 			assertEquals(6, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -61,7 +61,7 @@ public class InterpreterTest {
 			assertEquals(81, interpreter.execute(expr2));
 			assertEquals(2, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -76,7 +76,7 @@ public class InterpreterTest {
 			assertEquals(48, interpreter.execute(expr2));
 			assertEquals(1236, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -91,7 +91,7 @@ public class InterpreterTest {
 			assertEquals(-10, interpreter.execute(expr2));
 			assertEquals(3468, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -133,7 +133,7 @@ public class InterpreterTest {
 			assertEquals(3, interpreter.execute(expr2));
 			assertEquals(5, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -146,7 +146,7 @@ public class InterpreterTest {
 			assertEquals(10, interpreter.execute(expr1));
 			assertEquals(40, interpreter.execute(expr2));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -161,7 +161,7 @@ public class InterpreterTest {
 			assertEquals(40, interpreter.execute(expr2));
 			assertEquals(-2, interpreter.execute(expr3));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 	}
 
@@ -181,7 +181,7 @@ public class InterpreterTest {
 			assertEquals(3, interpreter.execute(expr3));
 			assertEquals(63, interpreter.execute(expr6));
 		} catch (ParseException e) {
-			fail("ParseException");
+			fail(e.getMessage());
 		}
 
 		try {

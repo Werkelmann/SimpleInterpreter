@@ -33,17 +33,11 @@ public class Parser {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
-		// try {
 		Ast result = program();
 		if (!(currentToken instanceof EndOfFileToken)) {
 			throw new ParseException("Expected: EndOfFile Found: " + currentToken, tokens.getPosition());
 		}
 		return result;
-		// } catch (Exception e) {
-		// throw new ParseException("Failure at position " +
-		// tokens.getPosition() + " " + e.getMessage(),
-		// tokens.getPosition());
-		// }
 	}
 
 	private Ast program() throws ParseException {
@@ -53,26 +47,27 @@ public class Parser {
 					"Error at Position " + tokens.getPosition() + ". Expected: . Found: " + currentToken,
 					tokens.getPosition());
 		} else {
+			nextToken();
 			return result;
 		}
 	}
 
 	private Ast compoundStatement() throws ParseException {
-		int pos = tokens.getPosition() - 1;
-		if (!(eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("BEGIN"))) {
+		if (!(eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("BEGIN"))) {
 			throw new ParseException(
 					"Error at Position " + tokens.getPosition() + ". Expected: BEGIN Found: " + currentToken,
 					tokens.getPosition());
 		}
+		nextToken();
 
 		List<Ast> nodes = statementList();
-		pos = tokens.getPosition() - 1;
-		if (!(eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("END"))) {
+		if (!(eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("END"))) {
 			throw new ParseException(
 					"Error at Position " + tokens.getPosition() + ". Expected: END Found: " + currentToken,
 					tokens.getPosition());
 		}
 		CompoundNode result = new CompoundNode();
+		nextToken();
 		for (Ast node : nodes) {
 			result.addChild(node);
 		}
@@ -86,6 +81,7 @@ public class Parser {
 		stmts.add(node);
 
 		while (eat(SemicolonToken.TOKEN_TYPE)) {
+			nextToken();
 			stmts.add(statement());
 		}
 
@@ -93,17 +89,12 @@ public class Parser {
 	}
 
 	private Ast statement() throws ParseException {
-		int pos = tokens.getPosition() - 1;
 
-		if (eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("BEGIN")) {
-			currentToken = tokens.getTokenAt(pos);
-			tokens.setPosition(pos + 1);
+		if (eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("BEGIN")) {
 			return compoundStatement();
 		}
-		currentToken = tokens.getTokenAt(pos);
-		tokens.setPosition(pos);
 
-		if (eat(IdentifierToken.TOKEN_TYPE) && !tokens.getTokenAt(pos).getValue().equals("END")) {
+		if (eat(IdentifierToken.TOKEN_TYPE) && !currentToken.getValue().equals("END")) {
 			return assignStatement();
 		}
 
@@ -118,6 +109,7 @@ public class Parser {
 					"Error at Position " + tokens.getPosition() + ". Expected: := Found: " + currentToken,
 					tokens.getPosition());
 		}
+		nextToken();
 		Ast right = expr();
 		return new AssignNode(left, token, right);
 	}
@@ -125,6 +117,7 @@ public class Parser {
 	private Ast variable() throws ParseException {
 		Ast result = new VarLeaf(currentToken.getValue());
 		eat(IdentifierToken.TOKEN_TYPE);
+		nextToken();
 		return result;
 	}
 
@@ -134,9 +127,10 @@ public class Parser {
 
 	private Ast expr() throws ParseException {
 		Ast result = term();
-		while (isExprOperator(currentToken.getValue())) {
+		while (this.isExprOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			this.eat(OperatorToken.TOKEN_TYPE);
+			this.nextToken();
 
 			result = new BinaryOperationNode(result, op, term());
 		}
@@ -153,7 +147,7 @@ public class Parser {
 		while (isTermOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			this.eat(OperatorToken.TOKEN_TYPE);
-
+			this.nextToken();
 			result = new BinaryOperationNode(result, op, factor());
 		}
 
@@ -166,36 +160,41 @@ public class Parser {
 
 	private Ast factor() throws ParseException {
 		Ast result;
-		Token temp = currentToken;
 		if (this.eat(OperatorToken.TOKEN_TYPE)) {
-			return new UnaryOperationNode(temp.getValue(), this.factor());
+			String value = currentToken.getValue();
+			nextToken();
+			result = new UnaryOperationNode(value, this.factor());
+			return result;
 		}
 		if (this.eat(IntegerToken.TOKEN_TYPE)) {
-			result = new IntegerLeaf(Integer.parseInt(temp.getValue()));
+			result = new IntegerLeaf(Integer.parseInt(currentToken.getValue()));
+			nextToken();
 			return result;
 		}
 		if (this.eat(RoundOpeningBracketToken.TOKEN_TYPE)) {
+			nextToken();
 			result = expr();
 			if (!this.eat(RoundClosingBracketToken.TOKEN_TYPE)) {
 				throw new ParseException(
 						"Error at Position " + tokens.getPosition() + ". Missing round closing bracket!",
 						tokens.getPosition());
 			}
+			nextToken();
 			return result;
 		}
 		if (this.eat(IdentifierToken.TOKEN_TYPE)) {
+			nextToken();
 			return variable();
 		}
 		throw new ParseException("Error at Position " + tokens.getPosition(), tokens.getPosition());
 	}
 
 	private boolean eat(String expected) throws ParseException {
-		if (currentToken.getType().equals(expected)) {
-			currentToken = tokens.getNextToken();
-			return true;
-		} else {
-			return false;
-		}
+		return currentToken.getType().equals(expected);
+	}
+
+	private void nextToken() {
+		currentToken = tokens.getNextToken();
 	}
 
 }
