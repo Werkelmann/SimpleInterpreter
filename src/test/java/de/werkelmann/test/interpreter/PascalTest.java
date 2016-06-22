@@ -30,4 +30,26 @@ public class PascalTest {
 		}
 	}
 
+	@Test
+	public void testNestedCompound() {
+		try {
+			String input = "BEGIN BEGIN a := 2 END END.";
+			interpreter.execute(input);
+			assertEquals(2, (int) interpreter.getVariables().get(7));
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testStmtList() {
+		try {
+			String input = "BEGIN BEGIN a := 2; b := 2 END END.";
+			interpreter.execute(input);
+			assertEquals(2, (int) interpreter.getVariables().get(7));
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+	}
+
 }

@@ -97,15 +97,6 @@ public class InterpreterTest {
 
 	@Test
 	public void testForParseException() {
-		String expr1 = "32 + a";
-		try {
-			interpreter.execute(expr1);
-			fail("Should throw a ParseException");
-		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
-			assertEquals(5, e.getErrorOffset());
-		}
-
 		String expr2 = "32 +";
 		try {
 			interpreter.execute(expr2);

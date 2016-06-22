@@ -33,16 +33,17 @@ public class Parser {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
-		try {
-			Ast result = program();
-			if (!(currentToken instanceof EndOfFileToken)) {
-				throw new Exception("Expected: EndOfFile Found: " + currentToken);
-			}
-			return result;
-		} catch (Exception e) {
-			throw new ParseException("Failure at position " + tokens.getPosition() + " " + e.getMessage(),
-					tokens.getPosition());
+		// try {
+		Ast result = program();
+		if (!(currentToken instanceof EndOfFileToken)) {
+			throw new ParseException("Expected: EndOfFile Found: " + currentToken, tokens.getPosition());
 		}
+		return result;
+		// } catch (Exception e) {
+		// throw new ParseException("Failure at position " +
+		// tokens.getPosition() + " " + e.getMessage(),
+		// tokens.getPosition());
+		// }
 	}
 
 	private Ast program() throws ParseException {
@@ -88,13 +89,6 @@ public class Parser {
 			stmts.add(statement());
 		}
 
-		// if (!eat(IdentifierToken.TOKEN_TYPE)) {
-		// throw new ParseException(
-		// "Error at Position " + tokens.getPosition() + ". Expected: END Found:
-		// " + currentToken,
-		// tokens.getPosition());
-		// }
-
 		return stmts;
 	}
 
@@ -102,15 +96,14 @@ public class Parser {
 		int pos = tokens.getPosition() - 1;
 
 		if (eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("BEGIN")) {
-			tokens.setPosition(pos);
+			currentToken = tokens.getTokenAt(pos);
+			tokens.setPosition(pos + 1);
 			return compoundStatement();
 		}
 		currentToken = tokens.getTokenAt(pos);
 		tokens.setPosition(pos);
 
 		if (eat(IdentifierToken.TOKEN_TYPE) && !tokens.getTokenAt(pos).getValue().equals("END")) {
-			// tokens.setPosition(pos);
-			// currentToken = tokens.getNextToken();
 			return assignStatement();
 		}
 

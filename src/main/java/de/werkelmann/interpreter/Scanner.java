@@ -49,7 +49,11 @@ public class Scanner {
 	public Token getToken(Character currentChar) throws ParseException {
 		while (Character.isWhitespace(currentChar)) {
 			incrementPosition();
-			currentChar = text.charAt(position);
+			try {
+				currentChar = text.charAt(position);
+			} catch (IndexOutOfBoundsException e) {
+				return new EndOfFileToken(null);
+			}
 		}
 
 		if (Character.isLetter(currentChar)) {
@@ -81,7 +85,7 @@ public class Scanner {
 			return new AssignToken(null);
 		}
 
-		throw new ParseException("Failure at scanning at position " + position, position);
+		throw new ParseException("Failure at scanning at position " + position + " Found: " + currentChar, position);
 	}
 
 	private boolean isOperator(Character currentChar) {
