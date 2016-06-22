@@ -15,7 +15,7 @@ import de.werkelmann.interpreter.ast.VarLeaf;
 
 public class AstVisitor {
 
-	public Map<Integer, Integer> globelScope = new HashMap<>();
+	public Map<String, Integer> globelScope = new HashMap<>();
 
 	public int visit(Ast node) {
 		Class<? extends Ast> clazz = node.getClass();
@@ -76,17 +76,12 @@ public class AstVisitor {
 
 	public int visitAssignNode(Ast node) {
 		AssignNode an = (AssignNode) node;
-
-		globelScope.put(visit(an.getVar()), visit(an.getExpr()));
-
+		globelScope.put(visitVarLeaf(an.getVar()), visit(an.getExpr()));
 		return 0;
 	}
 
-	public int visitVarLeaf(Ast node) {
-		VarLeaf vl = (VarLeaf) node;
-
-		// return vl.getValue();
-		return 7;
+	public String visitVarLeaf(Ast node) {
+		return ((VarLeaf) node).getValue();
 	}
 
 }

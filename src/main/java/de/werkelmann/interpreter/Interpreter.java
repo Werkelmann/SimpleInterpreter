@@ -1,7 +1,5 @@
 package de.werkelmann.interpreter;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -21,47 +19,12 @@ public class Interpreter {
 		return visitor.visit(parser.parse(scanner.scan(input)));
 	}
 
-	public Map<Integer, Integer> getVariables() {
+	public int expr(String input) throws ParseException {
+		return visitor.visit(parser.expr(scanner.scan(input)));
+	}
+
+	public Map<String, Integer> getVariables() {
 		return visitor.globelScope;
-	}
-
-	public static void main(String[] args) throws ParseException {
-		Interpreter i = new Interpreter();
-		// for (String arg : args) {
-		// System.out.println(i.execute(arg));
-		// }
-
-		String f = getFile("SampleProgram1");
-		Parser p = new Parser();
-		Scanner s = new Scanner();
-
-		p.parse(s.scan(f));
-
-	}
-
-	private static String getFile(String fileName) {
-		Interpreter i = new Interpreter();
-		StringBuilder result = new StringBuilder("");
-
-		// Get file from resources folder
-		ClassLoader classLoader = i.getClass().getClassLoader();
-		File file = new File(classLoader.getResource(fileName).getFile());
-
-		try (java.util.Scanner scanner = new java.util.Scanner(file)) {
-
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				result.append(line).append("\n");
-			}
-
-			scanner.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return result.toString();
-
 	}
 
 }

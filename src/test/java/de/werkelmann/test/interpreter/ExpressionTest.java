@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import de.werkelmann.interpreter.Interpreter;
 
-public class InterpreterTest {
+public class ExpressionTest {
 
 	private Interpreter interpreter;
 
@@ -27,9 +27,9 @@ public class InterpreterTest {
 		String expr3 = "4+2";
 
 		try {
-			assertEquals(7, interpreter.execute(expr1));
-			assertEquals(18, interpreter.execute(expr2));
-			assertEquals(6, interpreter.execute(expr3));
+			assertEquals(7, interpreter.expr(expr1));
+			assertEquals(18, interpreter.expr(expr2));
+			assertEquals(6, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -42,9 +42,9 @@ public class InterpreterTest {
 		String expr3 = "4  +      2 ";
 
 		try {
-			assertEquals(7, interpreter.execute(expr1));
-			assertEquals(18, interpreter.execute(expr2));
-			assertEquals(6, interpreter.execute(expr3));
+			assertEquals(7, interpreter.expr(expr1));
+			assertEquals(18, interpreter.expr(expr2));
+			assertEquals(6, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -57,9 +57,9 @@ public class InterpreterTest {
 		String expr3 = "4/2";
 
 		try {
-			assertEquals(1, interpreter.execute(expr1));
-			assertEquals(81, interpreter.execute(expr2));
-			assertEquals(2, interpreter.execute(expr3));
+			assertEquals(1, interpreter.expr(expr1));
+			assertEquals(81, interpreter.expr(expr2));
+			assertEquals(2, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -72,9 +72,9 @@ public class InterpreterTest {
 		String expr3 = "1234+2";
 
 		try {
-			assertEquals(36, interpreter.execute(expr1));
-			assertEquals(48, interpreter.execute(expr2));
-			assertEquals(1236, interpreter.execute(expr3));
+			assertEquals(36, interpreter.expr(expr1));
+			assertEquals(48, interpreter.expr(expr2));
+			assertEquals(1236, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -87,9 +87,9 @@ public class InterpreterTest {
 		String expr3 = "   1234+ 2234";
 
 		try {
-			assertEquals(36, interpreter.execute(expr1));
-			assertEquals(-10, interpreter.execute(expr2));
-			assertEquals(3468, interpreter.execute(expr3));
+			assertEquals(36, interpreter.expr(expr1));
+			assertEquals(-10, interpreter.expr(expr2));
+			assertEquals(3468, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -99,7 +99,7 @@ public class InterpreterTest {
 	public void testForParseException() {
 		String expr2 = "32 +";
 		try {
-			interpreter.execute(expr2);
+			interpreter.expr(expr2);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
@@ -107,7 +107,7 @@ public class InterpreterTest {
 
 		String expr3 = "+";
 		try {
-			interpreter.execute(expr3);
+			interpreter.expr(expr3);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
@@ -115,7 +115,7 @@ public class InterpreterTest {
 
 		String expr4 = "";
 		try {
-			interpreter.execute(expr4);
+			interpreter.expr(expr4);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
@@ -129,9 +129,9 @@ public class InterpreterTest {
 		String expr3 = "1+2-3+4-5+6";
 
 		try {
-			assertEquals(8, interpreter.execute(expr1));
-			assertEquals(3, interpreter.execute(expr2));
-			assertEquals(5, interpreter.execute(expr3));
+			assertEquals(8, interpreter.expr(expr1));
+			assertEquals(3, interpreter.expr(expr2));
+			assertEquals(5, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -143,8 +143,8 @@ public class InterpreterTest {
 		String expr2 = "100 - 2 * 30";
 
 		try {
-			assertEquals(10, interpreter.execute(expr1));
-			assertEquals(40, interpreter.execute(expr2));
+			assertEquals(10, interpreter.expr(expr1));
+			assertEquals(40, interpreter.expr(expr2));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -157,9 +157,9 @@ public class InterpreterTest {
 		String expr3 = "-2";
 
 		try {
-			assertEquals(-5, interpreter.execute(expr1));
-			assertEquals(40, interpreter.execute(expr2));
-			assertEquals(-2, interpreter.execute(expr3));
+			assertEquals(-5, interpreter.expr(expr1));
+			assertEquals(40, interpreter.expr(expr2));
+			assertEquals(-2, interpreter.expr(expr3));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -176,23 +176,23 @@ public class InterpreterTest {
 		String expr5 = "4)";
 
 		try {
-			assertEquals(10, interpreter.execute(expr1));
-			assertEquals(294, interpreter.execute(expr2));
-			assertEquals(3, interpreter.execute(expr3));
-			assertEquals(63, interpreter.execute(expr6));
+			assertEquals(10, interpreter.expr(expr1));
+			assertEquals(294, interpreter.expr(expr2));
+			assertEquals(3, interpreter.expr(expr3));
+			assertEquals(63, interpreter.expr(expr6));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
 
 		try {
-			interpreter.execute(expr4);
+			interpreter.expr(expr4);
 			fail("Missing closing bracket not reckognized");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);
 		}
 
 		try {
-			interpreter.execute(expr5);
+			interpreter.expr(expr5);
 			fail("Missing opening bracket not reckognized");
 		} catch (ParseException e) {
 			assertTrue(e instanceof ParseException);

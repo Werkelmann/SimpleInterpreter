@@ -1,4 +1,4 @@
-package de.werkelmann.interpreter;
+package de.werkelmann.interpreter.util;
 
 public interface CharCriteria {
 

@@ -15,6 +15,7 @@ import de.werkelmann.interpreter.tokens.OperatorToken;
 import de.werkelmann.interpreter.tokens.SemicolonToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
+import de.werkelmann.interpreter.util.CharCriteria;
 
 public class Scanner {
 
@@ -38,7 +39,7 @@ public class Scanner {
 		return new TokenList(tokens);
 	}
 
-	public Token getNextToken() throws ParseException {
+	private Token getNextToken() throws ParseException {
 		if (isPositionInRange()) {
 			Character currentChar = text.charAt(position);
 			return getToken(currentChar);
@@ -46,7 +47,7 @@ public class Scanner {
 		return new EndOfFileToken(null);
 	}
 
-	public Token getToken(Character currentChar) throws ParseException {
+	private Token getToken(Character currentChar) throws ParseException {
 		while (Character.isWhitespace(currentChar)) {
 			incrementPosition();
 			try {

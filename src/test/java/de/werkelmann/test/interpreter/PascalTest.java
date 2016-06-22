@@ -1,6 +1,7 @@
 package de.werkelmann.test.interpreter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
@@ -24,7 +25,7 @@ public class PascalTest {
 		try {
 			String input = "BEGIN a := 2 END.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get(7));
+			assertEquals(2, (int) interpreter.getVariables().get("a"));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -35,7 +36,7 @@ public class PascalTest {
 		try {
 			String input = "BEGIN BEGIN a := 2 END END.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get(7));
+			assertEquals(2, (int) interpreter.getVariables().get("a"));
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -46,9 +47,21 @@ public class PascalTest {
 		try {
 			String input = "BEGIN BEGIN a := 2; b := 2 END END.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get(7));
+			assertEquals(2, (int) interpreter.getVariables().get("a"));
+			assertEquals(2, (int) interpreter.getVariables().get("b"));
 		} catch (ParseException e) {
 			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testEmptyString() {
+		try {
+			String input = "";
+			interpreter.execute(input);
+			fail();
+		} catch (ParseException e) {
+			assertTrue(e instanceof ParseException);
 		}
 	}
 

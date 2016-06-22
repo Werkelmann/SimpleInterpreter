@@ -40,6 +40,17 @@ public class Parser {
 		return result;
 	}
 
+	public Ast expr(TokenList tokens) throws ParseException {
+		this.tokens = tokens;
+		this.currentToken = tokens.getNextToken();
+
+		Ast result = expr();
+		if (!(currentToken instanceof EndOfFileToken)) {
+			throw new ParseException("Expected: EndOfFile Found: " + currentToken, tokens.getPosition());
+		}
+		return result;
+	}
+
 	private Ast program() throws ParseException {
 		Ast result = compoundStatement();
 		if (!eat(DotToken.TOKEN_TYPE)) {
