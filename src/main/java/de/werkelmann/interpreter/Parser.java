@@ -35,10 +35,10 @@ public class Parser {
 
 		try {
 			Ast result = program();
-			if (currentToken instanceof EndOfFileToken) {
-				return result;
+			if (!(currentToken instanceof EndOfFileToken)) {
+				throw new Exception("Expected: EndOfFile Found: " + currentToken);
 			}
-			throw new Exception("Expected: EndOfFile Found: " + currentToken);
+			return result;
 		} catch (Exception e) {
 			throw new ParseException("Failure at position " + tokens.getPosition() + " " + e.getMessage(),
 					tokens.getPosition());
@@ -47,33 +47,35 @@ public class Parser {
 
 	private Ast program() throws ParseException {
 		Ast result = compoundStatement();
-		if (eat(DotToken.TOKEN_TYPE)) {
-			return result;
-		} else {
+		if (!eat(DotToken.TOKEN_TYPE)) {
 			throw new ParseException(
 					"Error at Position " + tokens.getPosition() + ". Expected: . Found: " + currentToken,
 					tokens.getPosition());
+		} else {
+			return result;
 		}
 	}
 
 	private Ast compoundStatement() throws ParseException {
 		int pos = tokens.getPosition() - 1;
-		if (eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("BEGIN")) {
-			List<Ast> nodes = statementList();
-			if (eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("END")) {
-				CompoundNode result = new CompoundNode();
-				for (Ast node : nodes) {
-					result.addChild(node);
-					return result;
-				}
-			}
+		if (!(eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("BEGIN"))) {
+			throw new ParseException(
+					"Error at Position " + tokens.getPosition() + ". Expected: BEGIN Found: " + currentToken,
+					tokens.getPosition());
+		}
+
+		List<Ast> nodes = statementList();
+		pos = tokens.getPosition() - 1;
+		if (!(eat(IdentifierToken.TOKEN_TYPE) && tokens.getTokenAt(pos).getValue().equals("END"))) {
 			throw new ParseException(
 					"Error at Position " + tokens.getPosition() + ". Expected: END Found: " + currentToken,
 					tokens.getPosition());
 		}
-		throw new ParseException(
-				"Error at Position " + tokens.getPosition() + ". Expected: BEGIN Found: " + currentToken,
-				tokens.getPosition());
+		CompoundNode result = new CompoundNode();
+		for (Ast node : nodes) {
+			result.addChild(node);
+		}
+		return result;
 	}
 
 	private List<Ast> statementList() throws ParseException {
@@ -86,11 +88,12 @@ public class Parser {
 			stmts.add(statement());
 		}
 
-		if (eat(IdentifierToken.TOKEN_TYPE)) {
-			throw new ParseException(
-					"Error at Position " + tokens.getPosition() + ". Expected: END Found: " + currentToken,
-					tokens.getPosition());
-		}
+		// if (!eat(IdentifierToken.TOKEN_TYPE)) {
+		// throw new ParseException(
+		// "Error at Position " + tokens.getPosition() + ". Expected: END Found:
+		// " + currentToken,
+		// tokens.getPosition());
+		// }
 
 		return stmts;
 	}
@@ -103,10 +106,11 @@ public class Parser {
 			return compoundStatement();
 		}
 		currentToken = tokens.getTokenAt(pos);
+		tokens.setPosition(pos);
 
 		if (eat(IdentifierToken.TOKEN_TYPE) && !tokens.getTokenAt(pos).getValue().equals("END")) {
-			tokens.setPosition(pos);
-			currentToken = tokens.getTokenAt(pos);
+			// tokens.setPosition(pos);
+			// currentToken = tokens.getNextToken();
 			return assignStatement();
 		}
 
@@ -116,7 +120,6 @@ public class Parser {
 	private Ast assignStatement() throws ParseException {
 		Ast left = variable();
 		Token token = currentToken;
-		// voll gut eigentlich mit doppelter negation, da kein rücksetzen nötig
 		if (!eat(AssignToken.TOKEN_TYPE)) {
 			throw new ParseException(
 					"Error at Position " + tokens.getPosition() + ". Expected: := Found: " + currentToken,
