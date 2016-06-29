@@ -54,9 +54,7 @@ public class Parser {
 	private Ast program() throws ParseException {
 		Ast result = compoundStatement();
 		if (!eat(DotToken.TOKEN_TYPE)) {
-			throw new ParseException(
-					"Error at Position " + tokens.getPosition() + ". Expected: . Found: " + currentToken,
-					tokens.getPosition());
+			throw new ParseException("Expected: . Found: " + currentToken, tokens.getPosition());
 		} else {
 			nextToken();
 			return result;
@@ -64,18 +62,14 @@ public class Parser {
 	}
 
 	private Ast compoundStatement() throws ParseException {
-		if (!(eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("BEGIN"))) {
-			throw new ParseException(
-					"Error at Position " + tokens.getPosition() + ". Expected: BEGIN Found: " + currentToken,
-					tokens.getPosition());
+		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN"))) {
+			throw new ParseException("Expected: BEGIN Found: " + currentToken, tokens.getPosition());
 		}
 		nextToken();
 
 		List<Ast> nodes = statementList();
-		if (!(eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("END"))) {
-			throw new ParseException(
-					"Error at Position " + tokens.getPosition() + ". Expected: END Found: " + currentToken,
-					tokens.getPosition());
+		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "END"))) {
+			throw new ParseException("Expected: END Found: " + currentToken, tokens.getPosition());
 		}
 		CompoundNode result = new CompoundNode();
 		nextToken();
@@ -101,7 +95,7 @@ public class Parser {
 
 	private Ast statement() throws ParseException {
 
-		if (eat(IdentifierToken.TOKEN_TYPE) && currentToken.getValue().equals("BEGIN")) {
+		if (checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN")) {
 			return compoundStatement();
 		}
 
@@ -116,9 +110,7 @@ public class Parser {
 		Ast left = variable();
 		Token token = currentToken;
 		if (!eat(AssignToken.TOKEN_TYPE)) {
-			throw new ParseException(
-					"Error at Position " + tokens.getPosition() + ". Expected: := Found: " + currentToken,
-					tokens.getPosition());
+			throw new ParseException("Expected: := Found: " + currentToken, tokens.getPosition());
 		}
 		nextToken();
 		Ast right = expr();
@@ -186,9 +178,7 @@ public class Parser {
 			nextToken();
 			result = expr();
 			if (!this.eat(RoundClosingBracketToken.TOKEN_TYPE)) {
-				throw new ParseException(
-						"Error at Position " + tokens.getPosition() + ". Missing round closing bracket!",
-						tokens.getPosition());
+				throw new ParseException("Expected: ) Found: " + currentToken, tokens.getPosition());
 			}
 			nextToken();
 			return result;
@@ -197,7 +187,11 @@ public class Parser {
 			nextToken();
 			return variable();
 		}
-		throw new ParseException("Error at Position " + tokens.getPosition(), tokens.getPosition());
+		throw new ParseException("Found: " + currentToken, tokens.getPosition());
+	}
+
+	private boolean checkTokenForTypeAndValue(String type, String value) throws ParseException {
+		return (eat(type) && currentToken.getValue().equals(value));
 	}
 
 	private boolean eat(String expected) throws ParseException {
