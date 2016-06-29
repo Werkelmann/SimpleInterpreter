@@ -26,7 +26,7 @@ public class RPNTranslatorTest {
 
 	private static String parse(String expr) {
 		try {
-			return trans.visit(parser.parse(scanner.scan(expr)));
+			return trans.visit(parser.expr(scanner.scan(expr)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
