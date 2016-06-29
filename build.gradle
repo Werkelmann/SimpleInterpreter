@@ -6,5 +6,4 @@ repositories {
 
 dependencies {
   testCompile 'junit:junit:4.12'
-  compile files("C:\\Program Files\\Java\\jdk1.8.0_60\\lib\\tools.jar")
 }
