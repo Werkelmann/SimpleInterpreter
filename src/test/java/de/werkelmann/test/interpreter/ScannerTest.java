@@ -9,11 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Scanner;
-import de.werkelmann.interpreter.tokens.AssignToken;
-import de.werkelmann.interpreter.tokens.DotToken;
 import de.werkelmann.interpreter.tokens.IdentifierToken;
 import de.werkelmann.interpreter.tokens.IntegerToken;
-import de.werkelmann.interpreter.tokens.SemicolonToken;
+import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 
@@ -66,11 +64,11 @@ public class ScannerTest {
 
 		try {
 			Token t1 = scan(id1);
-			assertTrue(t1 instanceof SemicolonToken);
+			assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
 			Token t2 = scan(id2);
-			assertTrue(t2 instanceof DotToken);
+			assertTrue(t2 instanceof SignToken && t2.getValue().equals("."));
 			Token t3 = scan(id3);
-			assertTrue(t3 instanceof AssignToken);
+			assertTrue(t3 instanceof SignToken && t3.getValue().equals(":="));
 		} catch (NumberFormatException | ParseException e) {
 			fail(e.getMessage());
 		}
@@ -87,15 +85,15 @@ public class ScannerTest {
 			t1 = tokens.getNextToken();
 			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("a"));
 			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof AssignToken);
+			assertTrue(t1 instanceof SignToken && t1.getValue().equals(":="));
 			t1 = tokens.getNextToken();
 			assertTrue(t1 instanceof IntegerToken && Integer.valueOf(t1.getValue()) == 2);
 			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof SemicolonToken);
+			assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
 			t1 = tokens.getNextToken();
 			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("END"));
 			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof DotToken);
+			assertTrue(t1 instanceof SignToken);
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}

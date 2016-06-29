@@ -1,14 +1,14 @@
 package de.werkelmann.interpreter.tokens;
 
-public class OperatorToken extends Token {
+public class SignToken extends Token {
 
-	public static final String TOKEN_TYPE = "Operator";
+	public static final String TOKEN_TYPE = "Dot";
 
-	public OperatorToken(Character value) {
+	public SignToken(Character value) {
 		this(String.valueOf(value));
 	}
 
-	public OperatorToken(String value) {
+	public SignToken(String value) {
 		super(value);
 	}
 

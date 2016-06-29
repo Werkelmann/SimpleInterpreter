@@ -12,15 +12,12 @@ import de.werkelmann.interpreter.ast.IntegerLeaf;
 import de.werkelmann.interpreter.ast.NoOp;
 import de.werkelmann.interpreter.ast.UnaryOperationNode;
 import de.werkelmann.interpreter.ast.VarLeaf;
-import de.werkelmann.interpreter.tokens.AssignToken;
-import de.werkelmann.interpreter.tokens.DotToken;
+import de.werkelmann.interpreter.tokens.BracketToken;
 import de.werkelmann.interpreter.tokens.EndOfFileToken;
 import de.werkelmann.interpreter.tokens.IdentifierToken;
 import de.werkelmann.interpreter.tokens.IntegerToken;
 import de.werkelmann.interpreter.tokens.OperatorToken;
-import de.werkelmann.interpreter.tokens.RoundClosingBracketToken;
-import de.werkelmann.interpreter.tokens.RoundOpeningBracketToken;
-import de.werkelmann.interpreter.tokens.SemicolonToken;
+import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 
@@ -53,7 +50,7 @@ public class Parser {
 
 	private Ast program() throws ParseException {
 		Ast result = compoundStatement();
-		if (!eat(DotToken.TOKEN_TYPE)) {
+		if (!eat(SignToken.TOKEN_TYPE)) {
 			throw new ParseException("Expected: . Found: " + currentToken, tokens.getPosition());
 		} else {
 			nextToken();
@@ -85,7 +82,7 @@ public class Parser {
 		Ast node = statement();
 		stmts.add(node);
 
-		while (eat(SemicolonToken.TOKEN_TYPE)) {
+		while (checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ";")) {
 			nextToken();
 			stmts.add(statement());
 		}
@@ -109,7 +106,7 @@ public class Parser {
 	private Ast assignStatement() throws ParseException {
 		Ast left = variable();
 		Token token = currentToken;
-		if (!eat(AssignToken.TOKEN_TYPE)) {
+		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ":=")) {
 			throw new ParseException("Expected: := Found: " + currentToken, tokens.getPosition());
 		}
 		nextToken();
@@ -174,10 +171,10 @@ public class Parser {
 			nextToken();
 			return result;
 		}
-		if (this.eat(RoundOpeningBracketToken.TOKEN_TYPE)) {
+		if (checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, "(")) {
 			nextToken();
 			result = expr();
-			if (!this.eat(RoundClosingBracketToken.TOKEN_TYPE)) {
+			if (!checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, ")")) {
 				throw new ParseException("Expected: ) Found: " + currentToken, tokens.getPosition());
 			}
 			nextToken();

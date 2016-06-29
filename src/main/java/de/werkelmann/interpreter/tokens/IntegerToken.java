@@ -9,7 +9,7 @@ public class IntegerToken extends Token {
 	}
 
 	@Override
-	protected String getTokenType() {
+	public String getType() {
 		return TOKEN_TYPE;
 	}
 

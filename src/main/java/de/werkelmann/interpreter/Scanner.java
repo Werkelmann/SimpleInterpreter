@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.werkelmann.interpreter.tokens.AssignToken;
 import de.werkelmann.interpreter.tokens.BracketToken;
-import de.werkelmann.interpreter.tokens.DotToken;
 import de.werkelmann.interpreter.tokens.EndOfFileToken;
 import de.werkelmann.interpreter.tokens.IdentifierToken;
 import de.werkelmann.interpreter.tokens.IntegerToken;
 import de.werkelmann.interpreter.tokens.OperatorToken;
-import de.werkelmann.interpreter.tokens.SemicolonToken;
+import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.CharCriteria;
@@ -67,23 +65,23 @@ public class Scanner {
 
 		if (isOperator(currentChar)) {
 			incrementPosition();
-			return new OperatorToken(String.valueOf(currentChar));
+			return new OperatorToken(currentChar);
 		}
 
 		if (isBracket(currentChar)) {
 			incrementPosition();
-			return BracketToken.create(currentChar);
+			return new BracketToken(currentChar);
 		}
 
 		if (isSpecialSign(currentChar)) {
 			incrementPosition();
-			return createSignToken(currentChar);
+			return new SignToken(currentChar);
 		}
 
 		if (currentChar.equals(':') && peek().equals('=')) {
 			incrementPosition();
 			incrementPosition();
-			return new AssignToken(null);
+			return new SignToken(":=");
 		}
 
 		throw new ParseException("Failure at scanning at position " + position + " Found: " + currentChar, position);
@@ -114,18 +112,6 @@ public class Scanner {
 			}
 		}
 		return number.toString();
-	}
-
-	private Token createSignToken(Character currentChar) throws ParseException {
-		switch (currentChar) {
-		case (';'):
-			return new SemicolonToken(null);
-		case ('.'):
-			return new DotToken(null);
-		default:
-			throw new ParseException("Unexpected char at " + position + ". Found: " + currentChar + " Expected: "
-					+ SPECIAL_SIGNS.toString(), position);
-		}
 	}
 
 	private void incrementPosition() {

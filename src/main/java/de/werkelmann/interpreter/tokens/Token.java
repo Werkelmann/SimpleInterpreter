@@ -5,21 +5,21 @@ public abstract class Token {
 	private final String value;
 	protected final String type;
 
-	public Token(String value) {
-		this.value = value;
-		this.type = getTokenType();
+	public Token(Character value) {
+		this(String.valueOf(value));
 	}
 
-	protected abstract String getTokenType();
+	public Token(String value) {
+		this.value = value;
+		this.type = getType();
+	}
 
 	@Override
 	public String toString() {
 		return "(" + getType() + ", " + getValue() + ")";
 	}
 
-	public String getType() {
-		return type;
-	}
+	public abstract String getType();
 
 	public String getValue() {
 		return value;
