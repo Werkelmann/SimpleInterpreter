@@ -102,7 +102,7 @@ public class ExpressionTest {
 			interpreter.expr(expr2);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 
 		String expr3 = "+";
@@ -110,7 +110,7 @@ public class ExpressionTest {
 			interpreter.expr(expr3);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 
 		String expr4 = "";
@@ -118,7 +118,7 @@ public class ExpressionTest {
 			interpreter.expr(expr4);
 			fail("Should throw a ParseException");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 	}
 
@@ -188,14 +188,14 @@ public class ExpressionTest {
 			interpreter.expr(expr4);
 			fail("Missing closing bracket not reckognized");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 
 		try {
 			interpreter.expr(expr5);
 			fail("Missing opening bracket not reckognized");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 	}
 

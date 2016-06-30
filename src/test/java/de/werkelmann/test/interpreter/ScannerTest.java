@@ -87,7 +87,7 @@ public class ScannerTest {
 			t1 = tokens.getNextToken();
 			assertTrue(t1 instanceof SignToken && t1.getValue().equals(":="));
 			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof IntegerToken && Integer.valueOf(t1.getValue()) == 2);
+			assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 2);
 			t1 = tokens.getNextToken();
 			assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
 			t1 = tokens.getNextToken();

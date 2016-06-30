@@ -55,6 +55,11 @@ public class Scanner {
 			}
 		}
 
+		if (currentChar.equals('_')) {
+			incrementPosition();
+			return new IdentifierToken("_" + readString(c -> Character.isLetter(c)));
+		}
+
 		if (Character.isLetter(currentChar)) {
 			return new IdentifierToken(readString(c -> Character.isLetter(c)));
 		}

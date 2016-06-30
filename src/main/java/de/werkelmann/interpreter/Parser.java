@@ -116,7 +116,9 @@ public class Parser {
 
 	private Ast variable() throws ParseException {
 		Ast result = new VarLeaf(currentToken.getValue());
-		eat(IdentifierToken.TOKEN_TYPE);
+		if (!this.eat(IdentifierToken.TOKEN_TYPE)) {
+			throw new ParseException("Expected: Identifier Found: " + currentToken, tokens.getPosition());
+		}
 		nextToken();
 		return result;
 	}
@@ -129,7 +131,9 @@ public class Parser {
 		Ast result = term();
 		while (this.isExprOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
-			this.eat(OperatorToken.TOKEN_TYPE);
+			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
+				throw new ParseException("Expected: Operator Found: " + currentToken, tokens.getPosition());
+			}
 			this.nextToken();
 
 			result = new BinaryOperationNode(result, op, term());
@@ -146,7 +150,9 @@ public class Parser {
 		Ast result = factor();
 		while (isTermOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
-			this.eat(OperatorToken.TOKEN_TYPE);
+			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
+				throw new ParseException("Expected: Operator Found: " + currentToken, tokens.getPosition());
+			}
 			this.nextToken();
 			result = new BinaryOperationNode(result, op, factor());
 		}
@@ -188,7 +194,7 @@ public class Parser {
 	}
 
 	private boolean checkTokenForTypeAndValue(String type, String value) throws ParseException {
-		return (eat(type) && currentToken.getValue().equals(value));
+		return (eat(type) && currentToken.getValue().toLowerCase().equals(value.toLowerCase()));
 	}
 
 	private boolean eat(String expected) throws ParseException {

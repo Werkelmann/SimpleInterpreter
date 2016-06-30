@@ -33,7 +33,7 @@ public class TokenList {
 
 	public Token getTokenAt(int position) {
 		if (position < tokens.size()) {
-			return tokens.get(position++);
+			return tokens.get(this.position++);
 		}
 		return tokens.get(tokens.size() - 1);
 	}

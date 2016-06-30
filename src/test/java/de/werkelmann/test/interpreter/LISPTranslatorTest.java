@@ -13,9 +13,9 @@ import de.werkelmann.interpreter.translator.LISPTranslator;
 
 public class LISPTranslatorTest {
 
-	static LISPTranslator trans;
-	static Parser parser;
-	static Scanner scanner;
+	private LISPTranslator trans;
+	private Parser parser;
+	private Scanner scanner;
 
 	@Before
 	public void init() {
@@ -24,7 +24,7 @@ public class LISPTranslatorTest {
 		scanner = new Scanner();
 	}
 
-	private static String parse(String expr) {
+	private String parse(String expr) {
 		try {
 			return trans.visit(parser.expr(scanner.scan(expr)));
 		} catch (ParseException e) {

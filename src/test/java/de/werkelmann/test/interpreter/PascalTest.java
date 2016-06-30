@@ -59,9 +59,39 @@ public class PascalTest {
 		try {
 			String input = "";
 			interpreter.execute(input);
-			fail();
+			fail("Empty Input should not be allowed");
 		} catch (ParseException e) {
-			assertTrue(e instanceof ParseException);
+			assertTrue(e.getClass().equals(ParseException.class));
+		}
+	}
+
+	@Test
+	public void testCaseInsensitiveKeywords() {
+		try {
+			String input = "BeGiN begiN a:= 2 end End.";
+			interpreter.execute(input);
+			assertEquals(2, (int) interpreter.getVariables().get("a"));
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testUnderscoreInIdentifier() {
+		try {
+			String input = "BeGiN begiN _a:= 2 end End.";
+			interpreter.execute(input);
+			assertEquals(2, (int) interpreter.getVariables().get("_a"));
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+
+		try {
+			String input = "BeGiN begiN a_ := 2 end End.";
+			interpreter.execute(input);
+			fail("Underscore somewhere in identifier is not allowed");
+		} catch (ParseException e) {
+			assertTrue(e.getClass().equals(ParseException.class));
 		}
 	}
 
