@@ -187,7 +187,6 @@ public class Parser {
 			return result;
 		}
 		if (this.eat(IdentifierToken.TOKEN_TYPE)) {
-			nextToken();
 			return variable();
 		}
 		throw new ParseException("Found: " + currentToken, tokens.getPosition());

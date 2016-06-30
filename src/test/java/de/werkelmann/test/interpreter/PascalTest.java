@@ -95,4 +95,15 @@ public class PascalTest {
 		}
 	}
 
+	@Test
+	public void testLookingUpOfVariables() {
+		try {
+			String input = "BEGIN a := 2; b := a + 4 END.";
+			interpreter.execute(input);
+			assertEquals(6, (int) interpreter.getVariables().get("b"));
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+	}
+
 }

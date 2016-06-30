@@ -76,11 +76,16 @@ public class AstVisitor {
 
 	public int visitAssignNode(Ast node) {
 		AssignNode an = (AssignNode) node;
-		globelScope.put(visitVarLeaf(an.getVar()), visit(an.getExpr()));
+		globelScope.put(visitVarLeafInAssignment(an.getVar()), visit(an.getExpr()));
 		return 0;
 	}
 
-	public String visitVarLeaf(Ast node) {
+	public int visitVarLeaf(Ast node) {
+		VarLeaf vl = (VarLeaf) node;
+		return globelScope.get(vl.getValue());
+	}
+
+	public String visitVarLeafInAssignment(Ast node) {
 		return ((VarLeaf) node).getValue();
 	}
 
