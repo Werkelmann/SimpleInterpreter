@@ -54,7 +54,7 @@ public class ExpressionTest {
 	public void testDifferentOperators() {
 		String expr1 = "3-2";
 		String expr2 = "9*9";
-		String expr3 = "4/2";
+		String expr3 = "4div2";
 
 		try {
 			assertEquals(1, interpreter.expr(expr1));
@@ -139,7 +139,7 @@ public class ExpressionTest {
 
 	@Test
 	public void testPrecedences() {
-		String expr1 = "9 + 4 / 4";
+		String expr1 = "9 + 4 div 4";
 		String expr2 = "100 - 2 * 30";
 
 		try {
@@ -170,7 +170,7 @@ public class ExpressionTest {
 		String expr1 = "11 - (2 - 1)";
 		String expr2 = "(100 - 2) * 3";
 		String expr3 = "(3)";
-		String expr6 = "(3+4) * ((12 / 4) * 3)";
+		String expr6 = "(3+4) * ((12 div 4) * 3)";
 
 		String expr4 = "(3";
 		String expr5 = "4)";

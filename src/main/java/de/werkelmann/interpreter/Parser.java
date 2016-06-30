@@ -161,7 +161,7 @@ public class Parser {
 	}
 
 	private boolean isTermOperator(String value) {
-		return (value != null && (value.equals("*") || value.equals("/")));
+		return (value != null && (value.equals("*") || value.equals("div")));
 	}
 
 	private Ast factor() throws ParseException {

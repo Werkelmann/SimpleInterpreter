@@ -17,7 +17,7 @@ import de.werkelmann.interpreter.util.CharCriteria;
 
 public class Scanner {
 
-	private final static Character[] OPERATORS = { '+', '-', '*', '/' };
+	private final static Character[] OPERATORS = { '+', '-', '*' };
 	private final static Character[] BRACKETS = { '(', ')' };
 	private final static Character[] SPECIAL_SIGNS = { ';', '.' };
 
@@ -61,7 +61,11 @@ public class Scanner {
 		}
 
 		if (Character.isLetter(currentChar)) {
-			return new IdentifierToken(readString(c -> Character.isLetter(c)));
+			String value = readString(c -> Character.isLetter(c));
+			if (value.toLowerCase().equals("div")) {
+				return new OperatorToken("div");
+			}
+			return new IdentifierToken(value);
 		}
 
 		if (Character.isDigit(currentChar)) {

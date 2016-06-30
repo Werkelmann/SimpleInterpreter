@@ -39,7 +39,7 @@ public class AstVisitor {
 			return visit(binNode.getLeft()) - visit(binNode.getRight());
 		case ("*"):
 			return visit(binNode.getLeft()) * visit(binNode.getRight());
-		case ("/"):
+		case ("div"):
 			return visit(binNode.getLeft()) / visit(binNode.getRight());
 		default:
 			throw new Exception("Unknown operator " + binNode.getOperator().getValue());
