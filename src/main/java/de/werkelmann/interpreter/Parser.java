@@ -206,7 +206,9 @@ public class Parser {
 	}
 
 	private void throwParseException(String expected) throws ParseException {
-		throw new ParseException("Expected: " + expected + " Found: " + currentToken, tokens.getPosition());
+		throw new ParseException(
+				"Expected: " + expected + " Found: " + currentToken + " at " + currentToken.getPosition(),
+				tokens.getPosition());
 	}
 
 }

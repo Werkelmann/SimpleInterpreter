@@ -34,7 +34,13 @@ public class PascalTest {
 	@Test
 	public void testNestedCompound() {
 		try {
-			String input = "BEGIN BEGIN a := 2 END END.";
+			// @formatter:off
+			String input = "BEGIN \n"
+					+ "BEGIN "
+					+ "a := 2 "
+					+ "END "
+					+ "END.";
+			// @formatter:on
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("a"));
 		} catch (ParseException e) {
