@@ -31,8 +31,8 @@ public class Parser {
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = program();
-		if (!(currentToken instanceof EndOfFileToken)) {
-			throw new ParseException("Expected: EndOfFile Found: " + currentToken, tokens.getPosition());
+		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
+			throwParseException(EndOfFileToken.TOKEN_TYPE);
 		}
 		return result;
 	}
@@ -42,8 +42,8 @@ public class Parser {
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = expr();
-		if (!(currentToken instanceof EndOfFileToken)) {
-			throw new ParseException("Expected: EndOfFile Found: " + currentToken, tokens.getPosition());
+		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
+			throwParseException(EndOfFileToken.TOKEN_TYPE);
 		}
 		return result;
 	}
@@ -51,7 +51,8 @@ public class Parser {
 	private Ast program() throws ParseException {
 		Ast result = compoundStatement();
 		if (!eat(SignToken.TOKEN_TYPE)) {
-			throw new ParseException("Expected: . Found: " + currentToken, tokens.getPosition());
+			throwParseException(SignToken.TOKEN_TYPE);
+			return null;
 		} else {
 			nextToken();
 			return result;
@@ -60,13 +61,13 @@ public class Parser {
 
 	private Ast compoundStatement() throws ParseException {
 		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN"))) {
-			throw new ParseException("Expected: BEGIN Found: " + currentToken, tokens.getPosition());
+			throwParseException("BEGIN");
 		}
 		nextToken();
 
 		List<Ast> nodes = statementList();
 		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "END"))) {
-			throw new ParseException("Expected: END Found: " + currentToken, tokens.getPosition());
+			throwParseException("END");
 		}
 		CompoundNode result = new CompoundNode();
 		nextToken();
@@ -107,7 +108,7 @@ public class Parser {
 		Ast left = variable();
 		Token token = currentToken;
 		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ":=")) {
-			throw new ParseException("Expected: := Found: " + currentToken, tokens.getPosition());
+			throwParseException(":=");
 		}
 		nextToken();
 		Ast right = expr();
@@ -117,7 +118,7 @@ public class Parser {
 	private Ast variable() throws ParseException {
 		Ast result = new VarLeaf(currentToken.getValue());
 		if (!this.eat(IdentifierToken.TOKEN_TYPE)) {
-			throw new ParseException("Expected: Identifier Found: " + currentToken, tokens.getPosition());
+			throwParseException(IdentifierToken.TOKEN_TYPE);
 		}
 		nextToken();
 		return result;
@@ -132,7 +133,7 @@ public class Parser {
 		while (this.isExprOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throw new ParseException("Expected: Operator Found: " + currentToken, tokens.getPosition());
+				throwParseException(OperatorToken.TOKEN_TYPE);
 			}
 			this.nextToken();
 
@@ -151,7 +152,7 @@ public class Parser {
 		while (isTermOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throw new ParseException("Expected: Operator Found: " + currentToken, tokens.getPosition());
+				throwParseException(OperatorToken.TOKEN_TYPE);
 			}
 			this.nextToken();
 			result = new BinaryOperationNode(result, op, factor());
@@ -181,7 +182,7 @@ public class Parser {
 			nextToken();
 			result = expr();
 			if (!checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, ")")) {
-				throw new ParseException("Expected: ) Found: " + currentToken, tokens.getPosition());
+				throwParseException(")");
 			}
 			nextToken();
 			return result;
@@ -202,6 +203,10 @@ public class Parser {
 
 	private void nextToken() {
 		currentToken = tokens.getNextToken();
+	}
+
+	private void throwParseException(String expected) throws ParseException {
+		throw new ParseException("Expected: " + expected + " Found: " + currentToken, tokens.getPosition());
 	}
 
 }
