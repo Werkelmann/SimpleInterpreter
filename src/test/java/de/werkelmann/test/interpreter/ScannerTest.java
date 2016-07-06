@@ -3,8 +3,6 @@ package de.werkelmann.test.interpreter;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +32,7 @@ public class ScannerTest {
 			assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 1);
 			Token t2 = scan(int2);
 			assertTrue(t2 instanceof IntegerToken && Integer.parseInt(t2.getValue()) == 12345);
-		} catch (NumberFormatException | ParseException e) {
+		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -50,7 +48,7 @@ public class ScannerTest {
 			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("jesus"));
 			Token t2 = scan(id2);
 			assertTrue(t2 instanceof IdentifierToken && t2.getValue().equals("BEGIN"));
-		} catch (NumberFormatException | ParseException e) {
+		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
 
@@ -69,7 +67,7 @@ public class ScannerTest {
 			assertTrue(t2 instanceof SignToken && t2.getValue().equals("."));
 			Token t3 = scan(id3);
 			assertTrue(t3 instanceof SignToken && t3.getValue().equals(":="));
-		} catch (NumberFormatException | ParseException e) {
+		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
 
@@ -77,29 +75,25 @@ public class ScannerTest {
 
 	@Test
 	public void testLongerExpression() {
-		try {
-			String input = "BEGIN a := 2; END.";
-			TokenList tokens = scanner.scan(input);
-			Token t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("BEGIN"));
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("a"));
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof SignToken && t1.getValue().equals(":="));
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 2);
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("END"));
-			t1 = tokens.getNextToken();
-			assertTrue(t1 instanceof SignToken);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		String input = "BEGIN a := 2; END.";
+		TokenList tokens = scanner.scan(input);
+		Token t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("BEGIN"));
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("a"));
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof SignToken && t1.getValue().equals(":="));
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 2);
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("END"));
+		t1 = tokens.getNextToken();
+		assertTrue(t1 instanceof SignToken);
 	}
 
-	private Token scan(String input) throws ParseException {
+	private Token scan(String input) {
 		return scanner.scan(input).getNextToken();
 	}
 

@@ -1,7 +1,8 @@
 package de.werkelmann.interpreter;
 
-import java.text.ParseException;
 import java.util.Map;
+
+import de.werkelmann.interpreter.util.ParserException;
 
 public class Interpreter {
 
@@ -15,11 +16,11 @@ public class Interpreter {
 		this.visitor = new AstVisitor();
 	}
 
-	public int execute(String input) throws ParseException {
+	public int execute(String input) throws ParserException {
 		return visitor.visit(parser.parse(scanner.scan(input)));
 	}
 
-	public int expr(String input) throws ParseException {
+	public int expr(String input) throws ParserException {
 		return visitor.visit(parser.expr(scanner.scan(input)));
 	}
 

@@ -1,6 +1,5 @@
 package de.werkelmann.interpreter;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +26,7 @@ public class Scanner {
 	private int line;
 	private int offset;
 
-	public TokenList scan(String text) throws ParseException {
+	public TokenList scan(String text) {
 		this.text = text;
 		this.position = 0;
 		this.line = 1;
@@ -43,7 +42,7 @@ public class Scanner {
 		return new TokenList(tokens);
 	}
 
-	private Token getNextToken() throws ParseException {
+	private Token getNextToken() {
 		if (isPositionInRange()) {
 			Character currentChar = text.charAt(position);
 			return getToken(currentChar);
@@ -51,7 +50,7 @@ public class Scanner {
 		return new EndOfFileToken(null, getPosition());
 	}
 
-	private Token getToken(Character currentChar) throws ParseException {
+	private Token getToken(Character currentChar) {
 		if (isLineBreak(currentChar)) {
 			incrementPosition();
 			line++;
@@ -105,7 +104,7 @@ public class Scanner {
 			return new SignToken(":=", getPosition());
 		}
 
-		throw new ParseException("Failure at scanning at position " + position + " Found: " + currentChar, position);
+		throw new RuntimeException("Failure at scanning at position " + position + " Found: " + currentChar);
 	}
 
 	private boolean isLineBreak(Character currentChar) {

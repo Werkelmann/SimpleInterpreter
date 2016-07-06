@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.IntBinaryOperator;
 
 import de.werkelmann.interpreter.ast.AssignNode;
 import de.werkelmann.interpreter.ast.Ast;
@@ -15,7 +16,18 @@ import de.werkelmann.interpreter.ast.VarLeaf;
 
 public class AstVisitor {
 
-	public Map<String, Integer> globelScope = new HashMap<>();
+	public Map<String, Integer> globelScope;
+	private Map<String, IntBinaryOperator> operations;
+
+	public AstVisitor() {
+		globelScope = new HashMap<>();
+
+		operations = new HashMap<>();
+		operations.put("+", (a, b) -> a + b);
+		operations.put("-", (a, b) -> a - b);
+		operations.put("*", (a, b) -> a * b);
+		operations.put("div", (a, b) -> a / b);
+	}
 
 	public int visit(Ast node) {
 		Class<? extends Ast> clazz = node.getClass();
@@ -32,18 +44,8 @@ public class AstVisitor {
 
 	public int visitBinaryOperationNode(Ast node) throws Exception {
 		BinaryOperationNode binNode = (BinaryOperationNode) node;
-		switch (binNode.getOperator().getValue()) {
-		case ("+"):
-			return visit(binNode.getLeft()) + visit(binNode.getRight());
-		case ("-"):
-			return visit(binNode.getLeft()) - visit(binNode.getRight());
-		case ("*"):
-			return visit(binNode.getLeft()) * visit(binNode.getRight());
-		case ("div"):
-			return visit(binNode.getLeft()) / visit(binNode.getRight());
-		default:
-			throw new Exception("Unknown operator " + binNode.getOperator().getValue());
-		}
+		return operations.get(binNode.getOperator().getValue()).applyAsInt(visit(binNode.getLeft()),
+				visit(binNode.getRight()));
 	}
 
 	public int visitIntegerLeaf(Ast node) {

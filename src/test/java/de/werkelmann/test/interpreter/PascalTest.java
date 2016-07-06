@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Interpreter;
+import de.werkelmann.interpreter.util.ParserException;
 
 public class PascalTest {
 
@@ -26,7 +25,7 @@ public class PascalTest {
 			String input = "BEGIN a := 2 END.";
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("a"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -43,7 +42,7 @@ public class PascalTest {
 			// @formatter:on
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("a"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -55,7 +54,7 @@ public class PascalTest {
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("a"));
 			assertEquals(2, (int) interpreter.getVariables().get("b"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -66,8 +65,8 @@ public class PascalTest {
 			String input = "";
 			interpreter.execute(input);
 			fail("Empty Input should not be allowed");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 	}
 
@@ -77,7 +76,7 @@ public class PascalTest {
 			String input = "BeGiN begiN a:= 2 end End.";
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("a"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -88,7 +87,7 @@ public class PascalTest {
 			String input = "BeGiN begiN _a:= 2 end End.";
 			interpreter.execute(input);
 			assertEquals(2, (int) interpreter.getVariables().get("_a"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 
@@ -96,8 +95,8 @@ public class PascalTest {
 			String input = "BeGiN begiN a_ := 2 end End.";
 			interpreter.execute(input);
 			fail("Underscore somewhere in identifier is not allowed");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 	}
 
@@ -107,7 +106,7 @@ public class PascalTest {
 			String input = "BEGIN a := 2; b := a + 4 END.";
 			interpreter.execute(input);
 			assertEquals(6, (int) interpreter.getVariables().get("b"));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}

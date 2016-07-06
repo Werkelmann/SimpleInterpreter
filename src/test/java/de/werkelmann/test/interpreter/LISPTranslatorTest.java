@@ -2,14 +2,13 @@ package de.werkelmann.test.interpreter;
 
 import static org.junit.Assert.assertEquals;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Parser;
 import de.werkelmann.interpreter.Scanner;
 import de.werkelmann.interpreter.translator.LISPTranslator;
+import de.werkelmann.interpreter.util.ParserException;
 
 public class LISPTranslatorTest {
 
@@ -27,7 +26,7 @@ public class LISPTranslatorTest {
 	private String parse(String expr) {
 		try {
 			return trans.visit(parser.expr(scanner.scan(expr)));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			e.printStackTrace();
 		}
 		return "";

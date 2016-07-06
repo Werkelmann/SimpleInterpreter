@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Interpreter;
+import de.werkelmann.interpreter.util.ParserException;
 
 public class ExpressionTest {
 
@@ -30,7 +29,7 @@ public class ExpressionTest {
 			assertEquals(7, interpreter.expr(expr1));
 			assertEquals(18, interpreter.expr(expr2));
 			assertEquals(6, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -45,7 +44,7 @@ public class ExpressionTest {
 			assertEquals(7, interpreter.expr(expr1));
 			assertEquals(18, interpreter.expr(expr2));
 			assertEquals(6, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -60,7 +59,7 @@ public class ExpressionTest {
 			assertEquals(1, interpreter.expr(expr1));
 			assertEquals(81, interpreter.expr(expr2));
 			assertEquals(2, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -75,7 +74,7 @@ public class ExpressionTest {
 			assertEquals(36, interpreter.expr(expr1));
 			assertEquals(48, interpreter.expr(expr2));
 			assertEquals(1236, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -90,7 +89,7 @@ public class ExpressionTest {
 			assertEquals(36, interpreter.expr(expr1));
 			assertEquals(-10, interpreter.expr(expr2));
 			assertEquals(3468, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -100,25 +99,25 @@ public class ExpressionTest {
 		String expr2 = "32 +";
 		try {
 			interpreter.expr(expr2);
-			fail("Should throw a ParseException");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+			fail("Should throw a ParserException");
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 
 		String expr3 = "+";
 		try {
 			interpreter.expr(expr3);
-			fail("Should throw a ParseException");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+			fail("Should throw a ParserException");
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 
 		String expr4 = "";
 		try {
 			interpreter.expr(expr4);
 			fail("Should throw a ParseException");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 	}
 
@@ -132,7 +131,7 @@ public class ExpressionTest {
 			assertEquals(8, interpreter.expr(expr1));
 			assertEquals(3, interpreter.expr(expr2));
 			assertEquals(5, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -145,7 +144,7 @@ public class ExpressionTest {
 		try {
 			assertEquals(10, interpreter.expr(expr1));
 			assertEquals(40, interpreter.expr(expr2));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -160,7 +159,7 @@ public class ExpressionTest {
 			assertEquals(-5, interpreter.expr(expr1));
 			assertEquals(40, interpreter.expr(expr2));
 			assertEquals(-2, interpreter.expr(expr3));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -180,22 +179,22 @@ public class ExpressionTest {
 			assertEquals(294, interpreter.expr(expr2));
 			assertEquals(3, interpreter.expr(expr3));
 			assertEquals(63, interpreter.expr(expr6));
-		} catch (ParseException e) {
+		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
 
 		try {
 			interpreter.expr(expr4);
 			fail("Missing closing bracket not reckognized");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 
 		try {
 			interpreter.expr(expr5);
 			fail("Missing opening bracket not reckognized");
-		} catch (ParseException e) {
-			assertTrue(e.getClass().equals(ParseException.class));
+		} catch (ParserException e) {
+			assertTrue(e.getClass().equals(ParserException.class));
 		}
 	}
 

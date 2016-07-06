@@ -1,6 +1,5 @@
 package de.werkelmann.interpreter;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,38 +19,39 @@ import de.werkelmann.interpreter.tokens.OperatorToken;
 import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
+import de.werkelmann.interpreter.util.ParserException;
 
 public class Parser {
 
 	private TokenList tokens;
 	private Token currentToken;
 
-	public Ast parse(TokenList tokens) throws ParseException {
+	public Ast parse(TokenList tokens) throws ParserException {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = program();
 		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
-			throwParseException(EndOfFileToken.TOKEN_TYPE);
+			throwParserException(EndOfFileToken.TOKEN_TYPE);
 		}
 		return result;
 	}
 
-	public Ast expr(TokenList tokens) throws ParseException {
+	public Ast expr(TokenList tokens) throws ParserException {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = expr();
 		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
-			throwParseException(EndOfFileToken.TOKEN_TYPE);
+			throwParserException(EndOfFileToken.TOKEN_TYPE);
 		}
 		return result;
 	}
 
-	private Ast program() throws ParseException {
+	private Ast program() throws ParserException {
 		Ast result = compoundStatement();
 		if (!eat(SignToken.TOKEN_TYPE)) {
-			throwParseException(SignToken.TOKEN_TYPE);
+			throwParserException(SignToken.TOKEN_TYPE);
 			return null;
 		} else {
 			nextToken();
@@ -59,15 +59,15 @@ public class Parser {
 		}
 	}
 
-	private Ast compoundStatement() throws ParseException {
+	private Ast compoundStatement() throws ParserException {
 		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN"))) {
-			throwParseException("BEGIN");
+			throwParserException("BEGIN");
 		}
 		nextToken();
 
 		List<Ast> nodes = statementList();
 		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "END"))) {
-			throwParseException("END");
+			throwParserException("END");
 		}
 		CompoundNode result = new CompoundNode();
 		nextToken();
@@ -77,7 +77,7 @@ public class Parser {
 		return result;
 	}
 
-	private List<Ast> statementList() throws ParseException {
+	private List<Ast> statementList() throws ParserException {
 		List<Ast> stmts = new ArrayList<>();
 
 		Ast node = statement();
@@ -91,7 +91,7 @@ public class Parser {
 		return stmts;
 	}
 
-	private Ast statement() throws ParseException {
+	private Ast statement() throws ParserException {
 
 		if (checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN")) {
 			return compoundStatement();
@@ -104,21 +104,21 @@ public class Parser {
 		return empty();
 	}
 
-	private Ast assignStatement() throws ParseException {
+	private Ast assignStatement() throws ParserException {
 		Ast left = variable();
 		Token token = currentToken;
 		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ":=")) {
-			throwParseException(":=");
+			throwParserException(":=");
 		}
 		nextToken();
 		Ast right = expr();
 		return new AssignNode(left, token, right);
 	}
 
-	private Ast variable() throws ParseException {
+	private Ast variable() throws ParserException {
 		Ast result = new VarLeaf(currentToken.getValue());
 		if (!this.eat(IdentifierToken.TOKEN_TYPE)) {
-			throwParseException(IdentifierToken.TOKEN_TYPE);
+			throwParserException(IdentifierToken.TOKEN_TYPE);
 		}
 		nextToken();
 		return result;
@@ -128,12 +128,12 @@ public class Parser {
 		return new NoOp();
 	}
 
-	private Ast expr() throws ParseException {
+	private Ast expr() throws ParserException {
 		Ast result = term();
 		while (this.isExprOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throwParseException(OperatorToken.TOKEN_TYPE);
+				throwParserException(OperatorToken.TOKEN_TYPE);
 			}
 			this.nextToken();
 
@@ -147,12 +147,12 @@ public class Parser {
 		return (value != null && (value.equals("+") || value.equals("-")));
 	}
 
-	private Ast term() throws ParseException {
+	private Ast term() throws ParserException {
 		Ast result = factor();
 		while (isTermOperator(currentToken.getValue())) {
 			OperatorToken op = (OperatorToken) currentToken;
 			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throwParseException(OperatorToken.TOKEN_TYPE);
+				throwParserException(OperatorToken.TOKEN_TYPE);
 			}
 			this.nextToken();
 			result = new BinaryOperationNode(result, op, factor());
@@ -165,7 +165,7 @@ public class Parser {
 		return (value != null && (value.equals("*") || value.equals("div")));
 	}
 
-	private Ast factor() throws ParseException {
+	private Ast factor() throws ParserException {
 		Ast result;
 		if (this.eat(OperatorToken.TOKEN_TYPE)) {
 			String value = currentToken.getValue();
@@ -182,7 +182,7 @@ public class Parser {
 			nextToken();
 			result = expr();
 			if (!checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, ")")) {
-				throwParseException(")");
+				throwParserException(")");
 			}
 			nextToken();
 			return result;
@@ -190,14 +190,15 @@ public class Parser {
 		if (this.eat(IdentifierToken.TOKEN_TYPE)) {
 			return variable();
 		}
-		throw new ParseException("Found: " + currentToken, tokens.getPosition());
+		throwParserException("Found: " + currentToken);
+		return null;
 	}
 
-	private boolean checkTokenForTypeAndValue(String type, String value) throws ParseException {
+	private boolean checkTokenForTypeAndValue(String type, String value) throws ParserException {
 		return (eat(type) && currentToken.getValue().toLowerCase().equals(value.toLowerCase()));
 	}
 
-	private boolean eat(String expected) throws ParseException {
+	private boolean eat(String expected) throws ParserException {
 		return currentToken.getType().equals(expected);
 	}
 
@@ -205,10 +206,10 @@ public class Parser {
 		currentToken = tokens.getNextToken();
 	}
 
-	private void throwParseException(String expected) throws ParseException {
-		throw new ParseException(
+	private void throwParserException(String expected) throws ParserException {
+		throw new ParserException(
 				"Expected: " + expected + " Found: " + currentToken + " at " + currentToken.getPosition(),
-				tokens.getPosition());
+				currentToken.getPosition());
 	}
 
 }
