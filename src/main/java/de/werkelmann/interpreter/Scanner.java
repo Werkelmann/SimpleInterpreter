@@ -3,6 +3,7 @@ package de.werkelmann.interpreter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import de.werkelmann.interpreter.tokens.BracketToken;
 import de.werkelmann.interpreter.tokens.EndOfFileToken;
@@ -12,7 +13,6 @@ import de.werkelmann.interpreter.tokens.OperatorToken;
 import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
-import de.werkelmann.interpreter.util.CharCriteria;
 import de.werkelmann.interpreter.util.Position;
 
 public class Scanner {
@@ -125,10 +125,10 @@ public class Scanner {
 		return Arrays.asList(Scanner.SPECIAL_SIGNS).contains(currentChar);
 	}
 
-	private String readString(CharCriteria criteria) {
+	private String readString(Function<Character, Boolean> criteria) {
 		StringBuilder number = new StringBuilder();
 		char character = text.charAt(position);
-		while (criteria.match(character)) {
+		while (criteria.apply(character)) {
 			number.append(character);
 			incrementPosition();
 			if (isPositionInRange()) {

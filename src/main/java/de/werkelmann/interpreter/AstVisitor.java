@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
 
 import de.werkelmann.interpreter.ast.AssignNode;
 import de.werkelmann.interpreter.ast.Ast;
@@ -16,17 +17,25 @@ import de.werkelmann.interpreter.ast.VarLeaf;
 
 public class AstVisitor {
 
-	public Map<String, Integer> globelScope;
-	private Map<String, IntBinaryOperator> operations;
+	private Map<String, Integer> globelScope;
+	private Map<String, IntBinaryOperator> binaryOperations;
+	private Map<String, IntUnaryOperator> unaryOperations;
 
 	public AstVisitor() {
 		globelScope = new HashMap<>();
+		initOperations();
+	}
 
-		operations = new HashMap<>();
-		operations.put("+", (a, b) -> a + b);
-		operations.put("-", (a, b) -> a - b);
-		operations.put("*", (a, b) -> a * b);
-		operations.put("div", (a, b) -> a / b);
+	private void initOperations() {
+		binaryOperations = new HashMap<>();
+		binaryOperations.put("+", (a, b) -> a + b);
+		binaryOperations.put("-", (a, b) -> a - b);
+		binaryOperations.put("*", (a, b) -> a * b);
+		binaryOperations.put("div", (a, b) -> a / b);
+
+		unaryOperations = new HashMap<>();
+		unaryOperations.put("+", (a) -> a);
+		unaryOperations.put("-", (a) -> -a);
 	}
 
 	public int visit(Ast node) {
@@ -44,7 +53,7 @@ public class AstVisitor {
 
 	public int visitBinaryOperationNode(Ast node) throws Exception {
 		BinaryOperationNode binNode = (BinaryOperationNode) node;
-		return operations.get(binNode.getOperator().getValue()).applyAsInt(visit(binNode.getLeft()),
+		return binaryOperations.get(binNode.getOperator().getValue()).applyAsInt(visit(binNode.getLeft()),
 				visit(binNode.getRight()));
 	}
 
@@ -54,14 +63,7 @@ public class AstVisitor {
 
 	public int visitUnaryOperationNode(Ast node) throws Exception {
 		UnaryOperationNode unNode = (UnaryOperationNode) node;
-		switch (unNode.getValue()) {
-		case ("+"):
-			return visit(unNode.getExpr());
-		case ("-"):
-			return -visit(unNode.getExpr());
-		default:
-			throw new Exception("Unknown operator " + unNode.getValue());
-		}
+		return unaryOperations.get(unNode.getValue()).applyAsInt(visit(unNode.getExpr()));
 	}
 
 	public int visitCompoundNode(Ast node) {
@@ -89,6 +91,10 @@ public class AstVisitor {
 
 	public String visitVarLeafInAssignment(Ast node) {
 		return ((VarLeaf) node).getValue();
+	}
+
+	public int getVariable(String key) {
+		return globelScope.get(key);
 	}
 
 }

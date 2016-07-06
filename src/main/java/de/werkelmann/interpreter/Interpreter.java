@@ -1,7 +1,5 @@
 package de.werkelmann.interpreter;
 
-import java.util.Map;
-
 import de.werkelmann.interpreter.util.ParserException;
 
 public class Interpreter {
@@ -24,8 +22,8 @@ public class Interpreter {
 		return visitor.visit(parser.expr(scanner.scan(input)));
 	}
 
-	public Map<String, Integer> getVariables() {
-		return visitor.globelScope;
+	public int getVariable(String key) {
+		return visitor.getVariable(key);
 	}
 
 }

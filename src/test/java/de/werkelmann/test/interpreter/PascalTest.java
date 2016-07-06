@@ -24,7 +24,7 @@ public class PascalTest {
 		try {
 			String input = "BEGIN a := 2 END.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get("a"));
+			assertEquals(2, interpreter.getVariable("a"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
@@ -41,7 +41,7 @@ public class PascalTest {
 					+ "END.";
 			// @formatter:on
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get("a"));
+			assertEquals(2, interpreter.getVariable("a"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
@@ -52,8 +52,8 @@ public class PascalTest {
 		try {
 			String input = "BEGIN BEGIN a := 2; b := 2 END END.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get("a"));
-			assertEquals(2, (int) interpreter.getVariables().get("b"));
+			assertEquals(2, interpreter.getVariable("a"));
+			assertEquals(2, interpreter.getVariable("b"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
@@ -75,7 +75,7 @@ public class PascalTest {
 		try {
 			String input = "BeGiN begiN a:= 2 end End.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get("a"));
+			assertEquals(2, interpreter.getVariable("a"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
@@ -86,7 +86,7 @@ public class PascalTest {
 		try {
 			String input = "BeGiN begiN _a:= 2 end End.";
 			interpreter.execute(input);
-			assertEquals(2, (int) interpreter.getVariables().get("_a"));
+			assertEquals(2, interpreter.getVariable("_a"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
@@ -105,7 +105,7 @@ public class PascalTest {
 		try {
 			String input = "BEGIN a := 2; b := a + 4 END.";
 			interpreter.execute(input);
-			assertEquals(6, (int) interpreter.getVariables().get("b"));
+			assertEquals(6, interpreter.getVariable("b"));
 		} catch (ParserException e) {
 			fail(e.getMessage());
 		}
