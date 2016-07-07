@@ -1,7 +1,5 @@
 package de.werkelmann.interpreter;
 
-import de.werkelmann.interpreter.util.ParserException;
-
 public class Interpreter {
 
 	private Scanner scanner;
@@ -14,11 +12,11 @@ public class Interpreter {
 		this.visitor = new AstVisitor();
 	}
 
-	public int execute(String input) throws ParserException {
+	public int execute(String input) {
 		return visitor.visit(parser.parse(scanner.scan(input)));
 	}
 
-	public int expr(String input) throws ParserException {
+	public int expr(String input) {
 		return visitor.visit(parser.expr(scanner.scan(input)));
 	}
 
