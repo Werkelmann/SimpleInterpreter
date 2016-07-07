@@ -3,12 +3,12 @@ package de.werkelmann.interpreter;
 public class Interpreter {
 
 	private Scanner scanner;
-	private Parser parser;
+	private JavaParser parser;
 	private AstVisitor visitor;
 
 	public Interpreter() {
 		this.scanner = new Scanner();
-		this.parser = new Parser();
+		this.parser = new JavaParser();
 		this.visitor = new AstVisitor();
 	}
 

@@ -21,7 +21,7 @@ import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.ParserException;
 
-public class Parser {
+public class JavaParser {
 
 	private TokenList tokens;
 	private Token currentToken;

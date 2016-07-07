@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.werkelmann.interpreter.Parser;
+import de.werkelmann.interpreter.JavaParser;
 import de.werkelmann.interpreter.Scanner;
 import de.werkelmann.interpreter.translator.LISPTranslator;
 import de.werkelmann.interpreter.util.ParserException;
@@ -13,13 +13,13 @@ import de.werkelmann.interpreter.util.ParserException;
 public class LISPTranslatorTest {
 
 	private LISPTranslator trans;
-	private Parser parser;
+	private JavaParser parser;
 	private Scanner scanner;
 
 	@Before
 	public void init() {
 		trans = new LISPTranslator();
-		parser = new Parser();
+		parser = new JavaParser();
 		scanner = new Scanner();
 	}
 
