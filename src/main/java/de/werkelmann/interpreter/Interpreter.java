@@ -1,5 +1,7 @@
 package de.werkelmann.interpreter;
 
+import de.werkelmann.interpreter.parser.JavaParser;
+
 public class Interpreter {
 
 	private Scanner scanner;

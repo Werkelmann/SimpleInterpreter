@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.werkelmann.interpreter.JavaParser;
 import de.werkelmann.interpreter.Scanner;
+import de.werkelmann.interpreter.parser.JavaParser;
 import de.werkelmann.interpreter.translator.RPNTranslator;
 
 public class RPNTranslatorTest {

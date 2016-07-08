@@ -1,4 +1,4 @@
-package de.werkelmann.interpreter;
+package de.werkelmann.interpreter.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,12 @@ import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.ParserException;
 
-public class JavaParser {
+public class JavaParser implements Parser {
 
 	private TokenList tokens;
 	private Token currentToken;
 
+	@Override
 	public Ast parse(TokenList tokens) {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
@@ -50,7 +51,7 @@ public class JavaParser {
 
 	private Ast program() {
 		Ast result = compoundStatement();
-		if (!eat(SignToken.TOKEN_TYPE)) {
+		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ".")) {
 			throwParserException(SignToken.TOKEN_TYPE);
 			return null;
 		} else {
