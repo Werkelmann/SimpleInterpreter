@@ -1,16 +1,19 @@
 package de.werkelmann.interpreter;
 
-import de.werkelmann.interpreter.parser.JavaParser;
+import com.google.inject.Inject;
+
+import de.werkelmann.interpreter.parser.Parser;
 
 public class Interpreter {
 
 	private Scanner scanner;
-	private JavaParser parser;
+	private Parser parser;
 	private AstVisitor visitor;
 
-	public Interpreter() {
+	@Inject
+	public Interpreter(Parser parser) {
 		this.scanner = new Scanner();
-		this.parser = new JavaParser();
+		this.parser = parser;
 		this.visitor = new AstVisitor();
 	}
 

@@ -7,7 +7,11 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import de.werkelmann.interpreter.Interpreter;
+import de.werkelmann.interpreter.guice.JavaInterpreterModule;
 import de.werkelmann.interpreter.util.ParserException;
 
 public class PascalTest {
@@ -16,7 +20,8 @@ public class PascalTest {
 
 	@Before
 	public void init() {
-		interpreter = new Interpreter();
+		Injector injector = Guice.createInjector(new JavaInterpreterModule());
+		interpreter = injector.getInstance(Interpreter.class);
 	}
 
 	@Test

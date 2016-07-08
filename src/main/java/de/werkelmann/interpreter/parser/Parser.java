@@ -6,4 +6,6 @@ import de.werkelmann.interpreter.tokens.TokenList;
 public interface Parser {
 
 	public Ast parse(TokenList tokens);
+
+	public Ast expr(TokenList tokens);
 }

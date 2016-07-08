@@ -9,11 +9,12 @@ repositories {
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.4.7'
+  compile group: 'com.google.inject', name: 'guice', version: '3.0'
   
   testCompile 'junit:junit:4.12'
 }
 
-test {finalizedBy jacocoTestReport}
+test.finalizedBy jacocoTestReport
 
 tasks.withType(FindBugs) {
 	reports {

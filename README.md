@@ -5,4 +5,4 @@
 My attempt to write a simple interpreter.
 https://ruslanspivak.com/lsbasi-part1/
 
-And testing stuff like travis ci
+I'm using it to test different frameworks and services and shit
