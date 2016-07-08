@@ -8,7 +8,6 @@ import org.junit.Test;
 import de.werkelmann.interpreter.JavaParser;
 import de.werkelmann.interpreter.Scanner;
 import de.werkelmann.interpreter.translator.RPNTranslator;
-import de.werkelmann.interpreter.util.ParserException;
 
 public class RPNTranslatorTest {
 
@@ -24,12 +23,7 @@ public class RPNTranslatorTest {
 	}
 
 	private String parse(String expr) {
-		try {
-			return trans.visit(parser.expr(scanner.scan(expr)));
-		} catch (ParserException e) {
-			e.printStackTrace();
-		}
-		return "";
+		return trans.visit(parser.expr(scanner.scan(expr)));
 	}
 
 	@Test

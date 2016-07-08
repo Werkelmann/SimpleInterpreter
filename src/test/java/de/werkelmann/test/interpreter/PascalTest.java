@@ -21,42 +21,30 @@ public class PascalTest {
 
 	@Test
 	public void testVariableTable() {
-		try {
-			String input = "BEGIN a := 2 END.";
-			interpreter.execute(input);
-			assertEquals(2, interpreter.getVariable("a"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+		String input = "BEGIN a := 2 END.";
+		interpreter.execute(input);
+		assertEquals(2, interpreter.getVariable("a"));
 	}
 
 	@Test
 	public void testNestedCompound() {
-		try {
-			// @formatter:off
-			String input = "BEGIN \n"
-					+ "BEGIN "
-					+ "a := 2 "
-					+ "END "
-					+ "END.";
-			// @formatter:on
-			interpreter.execute(input);
-			assertEquals(2, interpreter.getVariable("a"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+		// @formatter:off
+		String input = "BEGIN \n"
+				+ "BEGIN "
+				+ "a := 2 "
+				+ "END "
+				+ "END.";
+		// @formatter:on
+		interpreter.execute(input);
+		assertEquals(2, interpreter.getVariable("a"));
 	}
 
 	@Test
 	public void testStmtList() {
-		try {
-			String input = "BEGIN BEGIN a := 2; b := 2 END END.";
-			interpreter.execute(input);
-			assertEquals(2, interpreter.getVariable("a"));
-			assertEquals(2, interpreter.getVariable("b"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+		String input = "BEGIN BEGIN a := 2; b := 2 END END.";
+		interpreter.execute(input);
+		assertEquals(2, interpreter.getVariable("a"));
+		assertEquals(2, interpreter.getVariable("b"));
 	}
 
 	@Test
@@ -72,27 +60,22 @@ public class PascalTest {
 
 	@Test
 	public void testCaseInsensitiveKeywords() {
-		try {
-			String input = "BeGiN begiN a:= 2 end End.";
-			interpreter.execute(input);
-			assertEquals(2, interpreter.getVariable("a"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+		String input = "BeGiN begiN a:= 2 end End.";
+		interpreter.execute(input);
 	}
 
 	@Test
-	public void testUnderscoreInIdentifier() {
-		try {
-			String input = "BeGiN begiN _a:= 2 end End.";
-			interpreter.execute(input);
-			assertEquals(2, interpreter.getVariable("_a"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+	public void testAllowedUnderscoreInIdentifier() {
+		String input = "BeGiN begiN _a:= 2 end End.";
+		interpreter.execute(input);
+		assertEquals(2, interpreter.getVariable("_a"));
+	}
 
+	@Test
+	public void testUnallowedUnderscoreInIdentifier() {
+		String input;
 		try {
-			String input = "BeGiN begiN a_ := 2 end End.";
+			input = "BeGiN begiN a_ := 2 end End.";
 			interpreter.execute(input);
 			fail("Underscore somewhere in identifier is not allowed");
 		} catch (ParserException e) {
@@ -102,13 +85,9 @@ public class PascalTest {
 
 	@Test
 	public void testLookingUpOfVariables() {
-		try {
-			String input = "BEGIN a := 2; b := a + 4 END.";
-			interpreter.execute(input);
-			assertEquals(6, interpreter.getVariable("b"));
-		} catch (ParserException e) {
-			fail(e.getMessage());
-		}
+		String input = "BEGIN a := 2; b := a + 4 END.";
+		interpreter.execute(input);
+		assertEquals(6, interpreter.getVariable("b"));
 	}
 
 }
