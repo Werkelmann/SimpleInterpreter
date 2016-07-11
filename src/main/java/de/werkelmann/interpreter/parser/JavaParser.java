@@ -11,12 +11,6 @@ import de.werkelmann.interpreter.ast.IntegerLeaf;
 import de.werkelmann.interpreter.ast.NoOp;
 import de.werkelmann.interpreter.ast.UnaryOperationNode;
 import de.werkelmann.interpreter.ast.VarLeaf;
-import de.werkelmann.interpreter.tokens.BracketToken;
-import de.werkelmann.interpreter.tokens.EndOfFileToken;
-import de.werkelmann.interpreter.tokens.IdentifierToken;
-import de.werkelmann.interpreter.tokens.IntegerToken;
-import de.werkelmann.interpreter.tokens.OperatorToken;
-import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.ParserException;
@@ -32,27 +26,28 @@ public class JavaParser implements Parser {
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = program();
-		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
-			throwParserException(EndOfFileToken.TOKEN_TYPE);
+		if (!(eat(Token.END_OF_FILE))) {
+			throwParserException(Token.END_OF_FILE);
 		}
 		return result;
 	}
 
+	@Override
 	public Ast expr(TokenList tokens) {
 		this.tokens = tokens;
 		this.currentToken = tokens.getNextToken();
 
 		Ast result = expr();
-		if (!(eat(EndOfFileToken.TOKEN_TYPE))) {
-			throwParserException(EndOfFileToken.TOKEN_TYPE);
+		if (!(eat(Token.END_OF_FILE))) {
+			throwParserException(Token.END_OF_FILE);
 		}
 		return result;
 	}
 
 	private Ast program() {
 		Ast result = compoundStatement();
-		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ".")) {
-			throwParserException(SignToken.TOKEN_TYPE);
+		if (!checkTokenForTypeAndValue(Token.SIGN, ".")) {
+			throwParserException(Token.SIGN);
 			return null;
 		} else {
 			nextToken();
@@ -61,13 +56,13 @@ public class JavaParser implements Parser {
 	}
 
 	private Ast compoundStatement() {
-		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN"))) {
+		if (!(checkTokenForTypeAndValue(Token.IDENTIFIER, "BEGIN"))) {
 			throwParserException("BEGIN");
 		}
 		nextToken();
 
 		List<Ast> nodes = statementList();
-		if (!(checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "END"))) {
+		if (!(checkTokenForTypeAndValue(Token.IDENTIFIER, "END"))) {
 			throwParserException("END");
 		}
 		CompoundNode result = new CompoundNode();
@@ -84,7 +79,7 @@ public class JavaParser implements Parser {
 		Ast node = statement();
 		stmts.add(node);
 
-		while (checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ";")) {
+		while (checkTokenForTypeAndValue(Token.SIGN, ";")) {
 			nextToken();
 			stmts.add(statement());
 		}
@@ -94,11 +89,11 @@ public class JavaParser implements Parser {
 
 	private Ast statement() {
 
-		if (checkTokenForTypeAndValue(IdentifierToken.TOKEN_TYPE, "BEGIN")) {
+		if (checkTokenForTypeAndValue(Token.IDENTIFIER, "BEGIN")) {
 			return compoundStatement();
 		}
 
-		if (eat(IdentifierToken.TOKEN_TYPE) && !currentToken.getValue().equals("END")) {
+		if (eat(Token.IDENTIFIER) && !currentToken.getValue().get().equals("END")) {
 			return assignStatement();
 		}
 
@@ -108,7 +103,7 @@ public class JavaParser implements Parser {
 	private Ast assignStatement() {
 		Ast left = variable();
 		Token token = currentToken;
-		if (!checkTokenForTypeAndValue(SignToken.TOKEN_TYPE, ":=")) {
+		if (!checkTokenForTypeAndValue(Token.SIGN, ":=")) {
 			throwParserException(":=");
 		}
 		nextToken();
@@ -117,9 +112,9 @@ public class JavaParser implements Parser {
 	}
 
 	private Ast variable() {
-		Ast result = new VarLeaf(currentToken.getValue());
-		if (!this.eat(IdentifierToken.TOKEN_TYPE)) {
-			throwParserException(IdentifierToken.TOKEN_TYPE);
+		Ast result = new VarLeaf(currentToken.getValue().get());
+		if (!this.eat(Token.IDENTIFIER)) {
+			throwParserException(Token.IDENTIFIER);
 		}
 		nextToken();
 		return result;
@@ -131,10 +126,10 @@ public class JavaParser implements Parser {
 
 	private Ast expr() {
 		Ast result = term();
-		while (this.isExprOperator(currentToken.getValue())) {
-			OperatorToken op = (OperatorToken) currentToken;
-			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throwParserException(OperatorToken.TOKEN_TYPE);
+		while (this.isExprOperator(currentToken.getValue().orElse(""))) {
+			Token op = currentToken;
+			if (!this.eat(Token.OPERATOR)) {
+				throwParserException(Token.OPERATOR);
 			}
 			this.nextToken();
 
@@ -150,10 +145,10 @@ public class JavaParser implements Parser {
 
 	private Ast term() {
 		Ast result = factor();
-		while (isTermOperator(currentToken.getValue())) {
-			OperatorToken op = (OperatorToken) currentToken;
-			if (!this.eat(OperatorToken.TOKEN_TYPE)) {
-				throwParserException(OperatorToken.TOKEN_TYPE);
+		while (isTermOperator(currentToken.getValue().orElse(""))) {
+			Token op = currentToken;
+			if (!this.eat(Token.OPERATOR)) {
+				throwParserException(Token.OPERATOR);
 			}
 			this.nextToken();
 			result = new BinaryOperationNode(result, op, factor());
@@ -168,27 +163,27 @@ public class JavaParser implements Parser {
 
 	private Ast factor() {
 		Ast result;
-		if (this.eat(OperatorToken.TOKEN_TYPE)) {
-			String value = currentToken.getValue();
+		if (this.eat(Token.OPERATOR)) {
+			String value = currentToken.getValue().get();
 			nextToken();
 			result = new UnaryOperationNode(value, this.factor());
 			return result;
 		}
-		if (this.eat(IntegerToken.TOKEN_TYPE)) {
-			result = new IntegerLeaf(Integer.parseInt(currentToken.getValue()));
+		if (this.eat(Token.INTEGER)) {
+			result = new IntegerLeaf(Integer.parseInt(currentToken.getValue().get()));
 			nextToken();
 			return result;
 		}
-		if (checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, "(")) {
+		if (checkTokenForTypeAndValue(Token.BRACKET, "(")) {
 			nextToken();
 			result = expr();
-			if (!checkTokenForTypeAndValue(BracketToken.TOKEN_TYPE, ")")) {
+			if (!checkTokenForTypeAndValue(Token.BRACKET, ")")) {
 				throwParserException(")");
 			}
 			nextToken();
 			return result;
 		}
-		if (this.eat(IdentifierToken.TOKEN_TYPE)) {
+		if (this.eat(Token.IDENTIFIER)) {
 			return variable();
 		}
 		throwParserException("Found: " + currentToken);
@@ -196,7 +191,7 @@ public class JavaParser implements Parser {
 	}
 
 	private boolean checkTokenForTypeAndValue(String type, String value) {
-		return (eat(type) && currentToken.getValue().toLowerCase().equals(value.toLowerCase()));
+		return (eat(type) && currentToken.getValue().get().toLowerCase().equals(value.toLowerCase()));
 	}
 
 	private boolean eat(String expected) {

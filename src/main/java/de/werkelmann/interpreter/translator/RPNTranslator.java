@@ -25,7 +25,8 @@ public class RPNTranslator {
 
 	public String visitBinaryOperationNode(Ast node) throws Exception {
 		BinaryOperationNode binNode = (BinaryOperationNode) node;
-		return visit(binNode.getLeft()) + " " + visit(binNode.getRight()) + " " + binNode.getOperator().getValue();
+		return visit(binNode.getLeft()) + " " + visit(binNode.getRight()) + " "
+				+ binNode.getOperator().getValue().get();
 
 	}
 

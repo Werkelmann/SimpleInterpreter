@@ -53,7 +53,7 @@ public class AstVisitor {
 
 	public int visitBinaryOperationNode(Ast node) throws Exception {
 		BinaryOperationNode binNode = (BinaryOperationNode) node;
-		return binaryOperations.get(binNode.getOperator().getValue()).applyAsInt(visit(binNode.getLeft()),
+		return binaryOperations.get(binNode.getOperator().getValue().get()).applyAsInt(visit(binNode.getLeft()),
 				visit(binNode.getRight()));
 	}
 

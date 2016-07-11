@@ -1,20 +1,37 @@
 package de.werkelmann.interpreter.tokens;
 
+import java.util.Optional;
+
 import de.werkelmann.interpreter.util.Position;
 
-public abstract class Token {
+public class Token {
 
-	private final String value;
-	protected final String type;
+	public static final String END_OF_FILE = "EOF";
+	public static final String IDENTIFIER = "Identifier";
+	public static final String OPERATOR = "OPERATOR";
+	public static final String INTEGER = "Integer";
+	public static final String BRACKET = "Bracket";
+	public static final String SIGN = "Sign";
+
+	private final String type;
+	private final Optional<String> value;
 	private final Position position;
 
-	public Token(Character value, Position position) {
-		this(String.valueOf(value), position);
+	public Token(String type, Position position) {
+		this(type, Optional.empty(), position);
 	}
 
-	public Token(String value, Position position) {
+	public Token(String type, char value, Position position) {
+		this(type, String.valueOf(value), position);
+	}
+
+	public Token(String type, String value, Position position) {
+		this(type, Optional.of(value), position);
+	}
+
+	public Token(String type, Optional<String> value, Position position) {
+		this.type = type;
 		this.value = value;
-		this.type = getType();
 		this.position = position;
 	}
 
@@ -23,9 +40,11 @@ public abstract class Token {
 		return "(" + getType() + ", " + getValue() + ")";
 	}
 
-	public abstract String getType();
+	public String getType() {
+		return type;
+	}
 
-	public String getValue() {
+	public Optional<String> getValue() {
 		return value;
 	}
 

@@ -2,7 +2,6 @@ package de.werkelmann.interpreter.groovy.Parser
 
 import de.werkelmann.interpreter.ast.Ast
 import de.werkelmann.interpreter.parser.Parser
-import de.werkelmann.interpreter.tokens.EndOfFileToken
 import de.werkelmann.interpreter.tokens.Token
 import de.werkelmann.interpreter.tokens.TokenList
 import de.werkelmann.interpreter.util.ParserException

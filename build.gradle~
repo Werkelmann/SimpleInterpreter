@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'findbugs'
+apply plugin: 'jacoco'
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.4.7'
+  compile group: 'com.google.inject', name: 'guice', version: '3.0'
+  
+  testCompile 'junit:junit:4.12'
+}
+
+test.finalizedBy jacocoTestReport
+
+tasks.withType(FindBugs) {
+	reports {
+		xml.enabled false
+		html.enabled true
+		//html.stylesheet resources.text.fromFile('config/xsl/findbugs-custom.xsl')
+	}
+}
+
+check.dependsOn clean
+
+// remove GroovyCompile->JavaCompile task dependencies
+tasks.withType(GroovyCompile) {
+    dependsOn = [] 
+}
+
+// add JavaCompile->GroovyCompile task dependencies
+tasks.withType(JavaCompile) { task ->  
+    dependsOn task.name.replace("Java", "Groovy")
+}

@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import de.werkelmann.interpreter.tokens.BracketToken;
-import de.werkelmann.interpreter.tokens.EndOfFileToken;
-import de.werkelmann.interpreter.tokens.IdentifierToken;
-import de.werkelmann.interpreter.tokens.IntegerToken;
-import de.werkelmann.interpreter.tokens.OperatorToken;
-import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.Position;
@@ -37,7 +31,7 @@ public class Scanner {
 		do {
 			currentToken = getNextToken();
 			tokens.add(currentToken);
-		} while (!(currentToken instanceof EndOfFileToken));
+		} while (!currentToken.getType().equals(Token.END_OF_FILE));
 
 		return new TokenList(tokens);
 	}
@@ -47,7 +41,7 @@ public class Scanner {
 			Character currentChar = text.charAt(position);
 			return getToken(currentChar);
 		}
-		return new EndOfFileToken(null, getPosition());
+		return new Token(Token.END_OF_FILE, getPosition());
 	}
 
 	private Token getToken(Character currentChar) {
@@ -62,46 +56,46 @@ public class Scanner {
 			try {
 				currentChar = text.charAt(position);
 			} catch (IndexOutOfBoundsException e) {
-				return new EndOfFileToken(null, getPosition());
+				return new Token(Token.END_OF_FILE, getPosition());
 			}
 		}
 
 		if (currentChar.equals('_')) {
 			incrementPosition();
-			return new IdentifierToken("_" + readString(c -> Character.isLetter(c)), getPosition());
+			return new Token(Token.IDENTIFIER, "_" + readString(c -> Character.isLetter(c)), getPosition());
 		}
 
 		if (Character.isLetter(currentChar)) {
 			String value = readString(c -> Character.isLetter(c));
 			if (value.toLowerCase().equals("div")) {
-				return new OperatorToken("div", getPosition());
+				return new Token(Token.OPERATOR, "div", getPosition());
 			}
-			return new IdentifierToken(value, getPosition());
+			return new Token(Token.IDENTIFIER, value, getPosition());
 		}
 
 		if (Character.isDigit(currentChar)) {
-			return new IntegerToken(readString(c -> Character.isDigit(c)), getPosition());
+			return new Token(Token.INTEGER, readString(c -> Character.isDigit(c)), getPosition());
 		}
 
 		if (isOperator(currentChar)) {
 			incrementPosition();
-			return new OperatorToken(currentChar, getPosition());
+			return new Token(Token.OPERATOR, currentChar, getPosition());
 		}
 
 		if (isBracket(currentChar)) {
 			incrementPosition();
-			return new BracketToken(currentChar, getPosition());
+			return new Token(Token.BRACKET, currentChar, getPosition());
 		}
 
 		if (isSpecialSign(currentChar)) {
 			incrementPosition();
-			return new SignToken(currentChar, getPosition());
+			return new Token(Token.SIGN, currentChar, getPosition());
 		}
 
 		if (currentChar.equals(':') && peek().equals('=')) {
 			incrementPosition();
 			incrementPosition();
-			return new SignToken(":=", getPosition());
+			return new Token(Token.SIGN, ":=", getPosition());
 		}
 
 		throw new RuntimeException("Failure at scanning at position " + position + " Found: " + currentChar);

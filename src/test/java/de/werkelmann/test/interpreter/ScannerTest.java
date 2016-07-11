@@ -7,9 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Scanner;
-import de.werkelmann.interpreter.tokens.IdentifierToken;
-import de.werkelmann.interpreter.tokens.IntegerToken;
-import de.werkelmann.interpreter.tokens.SignToken;
 import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 
@@ -22,6 +19,14 @@ public class ScannerTest {
 		scanner = new Scanner();
 	}
 
+	private boolean testTokenForTypeAndValue(Token token, String type, Integer value) {
+		return testTokenForTypeAndValue(token, type, String.valueOf(value));
+	}
+
+	private boolean testTokenForTypeAndValue(Token token, String type, String value) {
+		return token.getType().equals(type) && token.getValue().get().equals(value);
+	}
+
 	@Test
 	public void testInteger() {
 		String int1 = "1";
@@ -29,9 +34,9 @@ public class ScannerTest {
 
 		try {
 			Token t1 = scan(int1);
-			assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 1);
+			assertTrue(testTokenForTypeAndValue(t1, Token.INTEGER, 1));
 			Token t2 = scan(int2);
-			assertTrue(t2 instanceof IntegerToken && Integer.parseInt(t2.getValue()) == 12345);
+			assertTrue(testTokenForTypeAndValue(t2, Token.INTEGER, 12345));
 		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
@@ -45,9 +50,9 @@ public class ScannerTest {
 
 		try {
 			Token t1 = scan(id1);
-			assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("jesus"));
+			assertTrue(testTokenForTypeAndValue(t1, Token.IDENTIFIER, "jesus"));
 			Token t2 = scan(id2);
-			assertTrue(t2 instanceof IdentifierToken && t2.getValue().equals("BEGIN"));
+			assertTrue(testTokenForTypeAndValue(t2, Token.IDENTIFIER, "BEGIN"));
 		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
@@ -62,11 +67,11 @@ public class ScannerTest {
 
 		try {
 			Token t1 = scan(id1);
-			assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
+			assertTrue(testTokenForTypeAndValue(t1, Token.SIGN, ";"));
 			Token t2 = scan(id2);
-			assertTrue(t2 instanceof SignToken && t2.getValue().equals("."));
+			assertTrue(testTokenForTypeAndValue(t2, Token.SIGN, "."));
 			Token t3 = scan(id3);
-			assertTrue(t3 instanceof SignToken && t3.getValue().equals(":="));
+			assertTrue(testTokenForTypeAndValue(t3, Token.SIGN, ":="));
 		} catch (NumberFormatException e) {
 			fail(e.getMessage());
 		}
@@ -78,19 +83,19 @@ public class ScannerTest {
 		String input = "BEGIN a := 2; END.";
 		TokenList tokens = scanner.scan(input);
 		Token t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("BEGIN"));
+		assertTrue(testTokenForTypeAndValue(t1, Token.IDENTIFIER, "BEGIN"));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("a"));
+		assertTrue(testTokenForTypeAndValue(t1, Token.IDENTIFIER, "a"));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof SignToken && t1.getValue().equals(":="));
+		assertTrue(testTokenForTypeAndValue(t1, Token.SIGN, ":="));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof IntegerToken && Integer.parseInt(t1.getValue()) == 2);
+		assertTrue(testTokenForTypeAndValue(t1, Token.INTEGER, 2));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof SignToken && t1.getValue().equals(";"));
+		assertTrue(testTokenForTypeAndValue(t1, Token.SIGN, ";"));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof IdentifierToken && t1.getValue().equals("END"));
+		assertTrue(testTokenForTypeAndValue(t1, Token.IDENTIFIER, "END"));
 		t1 = tokens.getNextToken();
-		assertTrue(t1 instanceof SignToken);
+		assertTrue(testTokenForTypeAndValue(t1, Token.SIGN, "."));
 	}
 
 	private Token scan(String input) {

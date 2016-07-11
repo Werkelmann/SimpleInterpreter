@@ -25,8 +25,8 @@ public class LISPTranslator {
 
 	public String visitBinaryOperationNode(Ast node) throws Exception {
 		BinaryOperationNode binNode = (BinaryOperationNode) node;
-		return "(" + binNode.getOperator().getValue() + " " + visit(binNode.getLeft()) + " " + visit(binNode.getRight())
-				+ ")";
+		return "(" + binNode.getOperator().getValue().get() + " " + visit(binNode.getLeft()) + " "
+				+ visit(binNode.getRight()) + ")";
 
 	}
 

@@ -28,7 +28,7 @@ public class TokenList {
 	}
 
 	public boolean hasNext() {
-		return tokens.get(position) instanceof EndOfFileToken;
+		return !tokens.get(position).getType().equals(Token.END_OF_FILE);
 	}
 
 	public Token getTokenAt(int position) {
