@@ -6,19 +6,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.werkelmann.interpreter.Scanner;
-import de.werkelmann.interpreter.parser.JavaParser;
+import de.werkelmann.interpreter.parser.JavaRecursiveDescentParser;
 import de.werkelmann.interpreter.translator.LISPTranslator;
 
 public class LISPTranslatorTest {
 
 	private LISPTranslator trans;
-	private JavaParser parser;
+	private JavaRecursiveDescentParser parser;
 	private Scanner scanner;
 
 	@Before
 	public void init() {
 		trans = new LISPTranslator();
-		parser = new JavaParser();
+		parser = new JavaRecursiveDescentParser();
 		scanner = new Scanner();
 	}
 

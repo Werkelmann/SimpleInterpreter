@@ -1,14 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'findbugs'
 apply plugin: 'jacoco'
-apply plugin: 'groovy'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.7'
   compile group: 'com.google.inject', name: 'guice', version: '3.0'
   
   testCompile 'junit:junit:4.12'

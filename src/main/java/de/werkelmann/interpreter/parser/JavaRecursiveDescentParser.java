@@ -15,7 +15,7 @@ import de.werkelmann.interpreter.tokens.Token;
 import de.werkelmann.interpreter.tokens.TokenList;
 import de.werkelmann.interpreter.util.ParserException;
 
-public class JavaParser implements Parser {
+public class JavaRecursiveDescentParser implements Parser {
 
 	private TokenList tokens;
 	private Token currentToken;
