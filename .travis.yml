@@ -5,9 +5,13 @@ jdk: oraclejdk8
 before_install:
          - chmod +x gradlew
 
-script: 
+script:
  - gradle assemble
  - gradle check
 
 notifications:
- email: false 
+ email: false
+
+language: python
+
+script: pytest
