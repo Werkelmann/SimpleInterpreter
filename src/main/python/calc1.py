@@ -1,5 +1,5 @@
 
-INTEGER, OPERATOR, EOF = 'INTEGER', 'OPERATOR', 'EOF'
+INTEGER, OPERATOR, EOF, LPARENTHESIS, RPARENTHESIS = 'INTEGER', 'OPERATOR', 'EOF', 'LPARENTHESIS', 'RPARENTHESIS'
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found}'
 EXCEPTION_UNKNOWN_OPERATOR = 'Unknown operator at {}. Found: {}'
 
@@ -64,6 +64,16 @@ class Lexer(object):
                 self.advance()
                 return token
 
+            if self.current_char == '(':
+                token = Token(LPARENTHESIS, self.current_char)
+                self.advance()
+                return token
+
+            if self.current_char == ')':
+                token = Token(RPARENTHESIS, self.current_char)
+                self.advance()
+                return token
+
             self.error(EXCEPTION_PARSE)
 
         return Token(EOF, None)
@@ -87,8 +97,15 @@ class Interpreter(object):
 
     def factor(self):
         token = self.current_token
-        self.eat(INTEGER)
-        return token.value
+        if token.type == INTEGER:
+            self.eat(INTEGER)
+            return token.value
+
+        if token.type == LPARENTHESIS:
+            self.eat(LPARENTHESIS)
+            result = self.expr()
+            self.eat(RPARENTHESIS)
+            return result
 
     def term(self):
         result = self.factor()

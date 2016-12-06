@@ -45,5 +45,9 @@ class TestCalculator(unittest.TestCase):
         self.assertEqual(Interpreter(Lexer('3-5*2')).expr(), -7)
         self.assertEqual(Interpreter(Lexer('14 + 2 * 3 - 6 / 2')).expr(), 17)
 
+    def test_expr_with_parenthesis(self):
+        self.assertEqual(Interpreter(Lexer('(7-5)*2')).expr(), 4)
+        self.assertEqual(Interpreter(Lexer('((7-5)+2)*3')).expr(), 12)
+
 if __name__ == '__main__':
     unittest.main()
