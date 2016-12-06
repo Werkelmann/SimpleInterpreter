@@ -202,6 +202,44 @@ class Interpreter(NodeVisitor):
         return self.visit(tree)
 
 
+class RPNTranslator(NodeVisitor):
+    def __init__(self, parser):
+        self.parser = parser
+
+    def visit_BinOp(self, node):
+        return '{left} {right} {op}'.format(
+            left=self.visit(node.left),
+            right=self.visit(node.right),
+            op=node.op.value
+        )
+
+    def visit_Num(self, node):
+        return node.value
+
+    def interpret(self):
+        tree = self.parser.parse()
+        return self.visit(tree)
+
+
+class LispTranslator(NodeVisitor):
+    def __init__(self, parser):
+        self.parser = parser
+
+    def visit_BinOp(self, node):
+        return '({op} {left} {right})'.format(
+            op=node.op.value,
+            left=self.visit(node.left),
+            right=self.visit(node.right)
+        )
+
+    def visit_Num(self, node):
+        return node.value
+
+    def interpret(self):
+        tree = self.parser.parse()
+        return self.visit(tree)
+
+
 def main():
     while True:
         try:

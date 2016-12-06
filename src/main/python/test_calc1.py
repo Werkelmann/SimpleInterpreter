@@ -52,7 +52,7 @@ class TestCalculator(unittest.TestCase):
         self.assertEqual(self.init_interpreter('(7-5)*2').interpret(), 4)
         self.assertEqual(self.init_interpreter('((7-5)+2)*3').interpret(), 12)
 
-    def test_expr_chapter_seven(self):
+    def test_examples_chapter_seven(self):
         self.assertEqual(self.init_interpreter('7 + 3 * (10 / (12 / (3 + 1) - 1))').interpret(), 22)
         self.assertEqual(self.init_interpreter('7 + 3 * (10 / (12 / (3 + 1) - 1)) / (2 + 3) - 5 - 3 + (8)')
                          .interpret(), 10)
