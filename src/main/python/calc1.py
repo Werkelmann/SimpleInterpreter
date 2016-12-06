@@ -1,6 +1,5 @@
 
 INTEGER, OPERATOR, EOF = 'INTEGER', 'OPERATOR', 'EOF'
-OPERATORS = ['+', '-', '*', '/']
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found}'
 EXCEPTION_UNKNOWN_OPERATOR = 'Unknown operator at {}. Found: {}'
 
@@ -20,7 +19,7 @@ class Token(object):
         return self.__str__()
 
 
-class Interpreter(object):
+class Lexer(object):
     def __init__(self, text):
         self.text = text
         self.position = 0
@@ -60,7 +59,7 @@ class Interpreter(object):
             if self.current_char.isdigit():
                 return Token(INTEGER, self.integer())
 
-            if self.current_char in OPERATORS:
+            if self.current_char in ('+', '-', '*', '/'):
                 token = Token(OPERATOR, self.current_char)
                 self.advance()
                 return token
@@ -69,22 +68,47 @@ class Interpreter(object):
 
         return Token(EOF, None)
 
+
+class Interpreter(object):
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+
+    def error(self, message):
+        raise Exception(message.format(
+            position=self.lexer.position,
+            found=self.current_token.value))
+
     def eat(self, token_type):
         if self.current_token.type == token_type:
-            self.current_token = self.get_next_token()
+            self.current_token = self.lexer.get_next_token()
         else:
             self.error(EXCEPTION_PARSE)
 
-    def term(self):
+    def factor(self):
         token = self.current_token
         self.eat(INTEGER)
         return token.value
 
-    def expr(self):
-        self.current_token = self.get_next_token()
+    def term(self):
+        result = self.factor()
+        while self.current_token.value in ('*', '/'):
+            op = self.current_token
+            self.eat(OPERATOR)
 
+            if op.value == '*':
+                result = result * self.term()
+            if op.value == '/':
+                result = result / self.term()
+
+        if result is not None:
+            return result
+
+        self.error(EXCEPTION_UNKNOWN_OPERATOR)
+
+    def expr(self):
         result = self.term()
-        while self.current_token.value in OPERATORS:
+        while self.current_token.value in ('+', '-'):
             op = self.current_token
             self.eat(OPERATOR)
 
@@ -92,10 +116,6 @@ class Interpreter(object):
                 result = result + self.term()
             if op.value == '-':
                 result = result - self.term()
-            if op.value == '*':
-                result = result * self.term()
-            if op.value == '/':
-                result = result / self.term()
 
         if result is not None:
             return result
@@ -111,7 +131,9 @@ def main():
             break
         if not text:
             continue
-        interpreter = Interpreter(text)
+
+        lexer = Lexer(text)
+        interpreter = Interpreter(lexer)
         result = interpreter.expr()
         print(result)
 
