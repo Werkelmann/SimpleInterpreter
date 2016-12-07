@@ -32,7 +32,8 @@ class TestCalculator(unittest.TestCase):
     def test_division(self):
         self.assertEqual(self.init_interpreter('6 DIV 3').expr(), 2)
         self.assertEqual(self.init_interpreter('15 DIV 5').expr(), 3)
-        self.assertEqual(self.init_interpreter('9 DIV 5').expr(), 1.8)
+        self.assertEqual(self.init_interpreter('9 DIV 5').expr(), 1)
+        self.assertEqual(self.init_interpreter('9 / 5').expr(), 1.8)
 
     def test_raise_exception_for_unknown_operator(self):
         with self.assertRaises(Exception):

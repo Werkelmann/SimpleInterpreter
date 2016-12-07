@@ -3,7 +3,7 @@ from calc1 import LispTranslator, RPNTranslator, Parser, Lexer
 import unittest
 
 
-class TestCalculator(unittest.TestCase):
+class TestTranslators(unittest.TestCase):
 
     def init_rpn(self, program):
         return RPNTranslator(Parser(Lexer(program)))

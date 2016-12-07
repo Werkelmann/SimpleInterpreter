@@ -2,7 +2,10 @@
 from calc1 import Interpreter, Parser, Lexer
 import unittest
 
-PROG = 'BEGIN ' \
+PROG = 'PROGRAM TEST;' \
+        'VAR ' \
+        'a, b, c, x, number : INTEGER;' \
+        'BEGIN ' \
         'BEGIN ' \
         'number := 2; ' \
         'a := number; ' \
@@ -13,7 +16,7 @@ PROG = 'BEGIN ' \
         'END. '
 
 
-class TestCalculator(unittest.TestCase):
+class TestPascal(unittest.TestCase):
 
     def init_interpreter(self, program):
         return Interpreter(Parser(Lexer(program)))
@@ -31,21 +34,27 @@ class TestCalculator(unittest.TestCase):
         self.assertEqual(interpreter.GLOBAL_SCOPE['x'], 11)
 
     def test_empty_statement(self):
-        interpreter = self.init_interpreter('BEGIN END.')
+        interpreter = self.init_interpreter('PROGRAM test; VAR a : INTEGER; BEGIN END.')
         interpreter.interpret()
         self.assertIsNotNone(interpreter.GLOBAL_SCOPE)
         self.assertEqual(interpreter.GLOBAL_SCOPE, {})
 
     def test_error_missing_dot(self):
         with self.assertRaises(Exception):
-            self.init_interpreter('BEGIN END').expr()
+            self.init_interpreter('PROGRAM test; VAR a : INTEGER; BEGIN END').expr()
 
     def test_error_missing_end(self):
         with self.assertRaises(Exception):
-            self.init_interpreter('BEGIN .').expr()
+            self.init_interpreter('PROGRAM test; VAR a : INTEGER; BEGIN .').expr()
 
     def test_lowercase_keywords(self):
-        interpreter = self.init_interpreter('beGin begin end; BEGIN END; EnD.')
+        interpreter = self.init_interpreter('PROGRAM test; VAR a : INTEGER; beGin begin end; BEGIN END; EnD.')
+        interpreter.interpret()
+        self.assertIsNotNone(interpreter.GLOBAL_SCOPE)
+        self.assertEqual(interpreter.GLOBAL_SCOPE, {})
+
+    def test_comment_skipping(self):
+        interpreter = self.init_interpreter('PROGRAM test; VAR a : INTEGER; {a := 2} BEGIN END.')
         interpreter.interpret()
         self.assertIsNotNone(interpreter.GLOBAL_SCOPE)
         self.assertEqual(interpreter.GLOBAL_SCOPE, {})
