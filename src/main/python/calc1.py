@@ -1,5 +1,6 @@
 
-INTEGER, OPERATOR, EOF, LPARENTHESIS, RPARENTHESIS = 'INTEGER', 'OPERATOR', 'EOF', 'LPARENTHESIS', 'RPARENTHESIS'
+INTEGER, OPERATOR, EOF, LEFT_PARENTHESIS, RIGHT_PARENTHESIS = ('INTEGER', 'OPERATOR', 'EOF', 'LEFT_PARENTHESIS',
+                                                               'RIGHT_PARENTHESIS')
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found}'
 EXCEPTION_UNKNOWN_OPERATOR = 'Unknown operator at {}. Found: {}'
 
@@ -71,12 +72,12 @@ class Lexer(object):
                 return token
 
             if self.current_char == '(':
-                token = Token(LPARENTHESIS, self.current_char)
+                token = Token(LEFT_PARENTHESIS, self.current_char)
                 self.advance()
                 return token
 
             if self.current_char == ')':
-                token = Token(RPARENTHESIS, self.current_char)
+                token = Token(RIGHT_PARENTHESIS, self.current_char)
                 self.advance()
                 return token
 
@@ -93,7 +94,10 @@ class Lexer(object):
 
 class AST(object):
     def __str__(self):
-        return self.token.__repr__()
+        return '{type}: {token}'.format(
+            type=type(self).__name__,
+            token=self.token.__repr__()
+        )
 
     def __repr__(self):
         return self.__str__()
@@ -104,6 +108,12 @@ class BinOp(AST):
         self.left = left
         self.token = self.op = op
         self.right = right
+
+
+class UnaryOp(AST):
+    def __init__(self, op, expr):
+        self.token = self.op = op
+        self.expr = expr
 
 
 class Num(AST):
@@ -130,14 +140,18 @@ class Parser(object):
 
     def factor(self):
         token = self.current_token
+        if token.type == OPERATOR and token.value in ['+', '-']:
+            self.eat(OPERATOR)
+            return UnaryOp(token, self.factor())
+
         if token.type == INTEGER:
             self.eat(INTEGER)
             return Num(token)
 
-        if token.type == LPARENTHESIS:
-            self.eat(LPARENTHESIS)
+        if token.type == LEFT_PARENTHESIS:
+            self.eat(LEFT_PARENTHESIS)
             node = self.expr()
-            self.eat(RPARENTHESIS)
+            self.eat(RIGHT_PARENTHESIS)
             return node
 
     def term(self):
@@ -194,11 +208,21 @@ class Interpreter(NodeVisitor):
         if node.op.value == '/':
             return self.visit(node.left) / self.visit(node.right)
 
+    def visit_UnaryOp(self, node):
+        if node.op.value == '+':
+            return + self.visit(node.expr)
+        if node.op.value == '-':
+            return - self.visit(node.expr)
+
     def visit_Num(self, node):
         return node.value
 
     def interpret(self):
         tree = self.parser.parse()
+        return self.visit(tree)
+
+    def expr(self):
+        tree = self.parser.expr()
         return self.visit(tree)
 
 
