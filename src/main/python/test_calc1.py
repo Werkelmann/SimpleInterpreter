@@ -5,8 +5,7 @@ import unittest
 
 class TestCalculator(unittest.TestCase):
 
-    @staticmethod
-    def init_interpreter(program):
+    def init_interpreter(self, program):
         return Interpreter(Parser(Lexer(program)))
 
     def test_addition(self):
