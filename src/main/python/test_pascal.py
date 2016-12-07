@@ -6,7 +6,7 @@ PROG = 'BEGIN ' \
         'BEGIN ' \
         'number := 2; ' \
         'a := number; ' \
-        'b := 10 * a + 10 * number / 4; ' \
+        'b := 10 * a + 10 * number DIV 4; ' \
         'c := a - - b ' \
         'END; ' \
         'x := 11; ' \
@@ -43,6 +43,12 @@ class TestCalculator(unittest.TestCase):
     def test_error_missing_end(self):
         with self.assertRaises(Exception):
             self.init_interpreter('BEGIN .').expr()
+
+    def test_lowercase_keywords(self):
+        interpreter = self.init_interpreter('beGin begin end; BEGIN END; EnD.')
+        interpreter.interpret()
+        self.assertIsNotNone(interpreter.GLOBAL_SCOPE)
+        self.assertEqual(interpreter.GLOBAL_SCOPE, {})
 
 
 if __name__ == '__main__':

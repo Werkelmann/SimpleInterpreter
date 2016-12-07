@@ -30,9 +30,9 @@ class TestCalculator(unittest.TestCase):
         self.assertEqual(self.init_interpreter('8*5').expr(), 40)
 
     def test_division(self):
-        self.assertEqual(self.init_interpreter('6/3').expr(), 2)
-        self.assertEqual(self.init_interpreter('15/5').expr(), 3)
-        self.assertEqual(self.init_interpreter('9/5').expr(), 1.8)
+        self.assertEqual(self.init_interpreter('6 DIV 3').expr(), 2)
+        self.assertEqual(self.init_interpreter('15 DIV 5').expr(), 3)
+        self.assertEqual(self.init_interpreter('9 DIV 5').expr(), 1.8)
 
     def test_raise_exception_for_unknown_operator(self):
         with self.assertRaises(Exception):
@@ -46,15 +46,15 @@ class TestCalculator(unittest.TestCase):
     def test_longer_expr_with_precedence(self):
         self.assertEqual(self.init_interpreter('3*5-2').expr(), 13)
         self.assertEqual(self.init_interpreter('3-5*2').expr(), -7)
-        self.assertEqual(self.init_interpreter('14 + 2 * 3 - 6 / 2').expr(), 17)
+        self.assertEqual(self.init_interpreter('14 + 2 * 3 - 6  DIV  2').expr(), 17)
 
     def test_interpret_with_parenthesis(self):
         self.assertEqual(self.init_interpreter('(7-5)*2').expr(), 4)
         self.assertEqual(self.init_interpreter('((7-5)+2)*3').expr(), 12)
 
     def test_examples_chapter_seven(self):
-        self.assertEqual(self.init_interpreter('7 + 3 * (10 / (12 / (3 + 1) - 1))').expr(), 22)
-        self.assertEqual(self.init_interpreter('7 + 3 * (10 / (12 / (3 + 1) - 1)) / (2 + 3) - 5 - 3 + (8)')
+        self.assertEqual(self.init_interpreter('7 + 3 * (10 DIV (12 DIV (3 + 1) - 1))').expr(), 22)
+        self.assertEqual(self.init_interpreter('7 + 3 * (10 DIV (12 DIV (3 + 1) - 1)) DIV (2 + 3) - 5 - 3 + (8)')
                          .expr(), 10)
         self.assertEqual(self.init_interpreter('7 + (((3 + 2)))').expr(), 12)
 

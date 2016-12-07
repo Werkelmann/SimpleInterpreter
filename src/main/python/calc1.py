@@ -1,6 +1,6 @@
 
-INTEGER, OPERATOR, EOF, LEFT_PARENTHESIS, RIGHT_PARENTHESIS = ('INTEGER', 'OPERATOR', 'EOF', 'LEFT_PARENTHESIS',
-                                                               'RIGHT_PARENTHESIS')
+INTEGER, OPERATOR, EOF, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, DIV = ('INTEGER', 'OPERATOR', 'EOF', 'LEFT_PARENTHESIS',
+                                                                    'RIGHT_PARENTHESIS', 'DIV')
 BEGIN, END, DOT, ASSIGN, SEMICOLON, ID = ('BEGIN', 'END', 'DOT', 'ASSIGN', 'SEMICOLON', 'ID')
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found}'
 EXCEPTION_UNKNOWN_OPERATOR = 'Unknown operator at {}. Found: {}'
@@ -13,8 +13,8 @@ EXCEPTION_UNKNOWN_OPERATOR = 'Unknown operator at {}. Found: {}'
 
 
 class Token(object):
-    def __init__(self, type, value):
-        self.type = type
+    def __init__(self, token_type, value):
+        self.type = token_type
         self.value = value
 
     def __str__(self):
@@ -30,6 +30,7 @@ class Token(object):
 RESERVED_KEYWORDS = {
     BEGIN: Token(BEGIN, BEGIN),
     END: Token(END, END),
+    DIV: Token(DIV, DIV),
 }
 
 
@@ -75,7 +76,7 @@ class Lexer(object):
             result += self.current_char
             self.advance()
 
-        token = RESERVED_KEYWORDS.get(result, Token(ID, result))
+        token = RESERVED_KEYWORDS.get(result.upper(), Token(ID, result))
         return token
 
     def get_next_token(self):
@@ -106,7 +107,7 @@ class Lexer(object):
             if self.current_char.isdigit():
                 return Token(INTEGER, self.integer())
 
-            if self.current_char in ('+', '-', '*', '/'):
+            if self.current_char in ('+', '-', '*'):
                 token = Token(OPERATOR, self.current_char)
                 self.advance()
                 return token
@@ -194,8 +195,8 @@ class Parser(object):
             position=self.lexer.position,
             found=self.current_token.value))
 
-    def eat(self, token_type):
-        if self.current_token.type == token_type:
+    def eat(self, *token_type):
+        if self.current_token.type in token_type:
             self.current_token = self.lexer.get_next_token()
         else:
             self.error(EXCEPTION_PARSE)
@@ -220,9 +221,9 @@ class Parser(object):
 
     def term(self):
         node = self.factor()
-        while self.current_token.value in ('*', '/'):
+        while self.current_token.value == '*' or self.current_token.type == DIV:
             op = self.current_token
-            self.eat(OPERATOR)
+            self.eat(OPERATOR, DIV)
 
             node = BinOp(left=node, op=op, right=self.factor())
 
@@ -324,7 +325,7 @@ class Interpreter(NodeVisitor):
             return self.visit(node.left) - self.visit(node.right)
         if node.op.value == '*':
             return self.visit(node.left) * self.visit(node.right)
-        if node.op.value == '/':
+        if node.op.value == DIV:
             return self.visit(node.left) / self.visit(node.right)
 
     def visit_UnaryOp(self, node):
