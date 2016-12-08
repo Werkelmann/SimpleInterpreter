@@ -1,6 +1,6 @@
 PROGRAM = RULE, {RULE};
-RULE = IDENTIFIER, "=", DEFINITION, ";";
+RULE = IDENTIFIER, "=", DEFINITION, ";";   #EQ for =, SEM for ; but this gives a parsing error#
 DEFINITION = SYMBOL, {",", SYMBOL}, {"|", DEFINITION};
 SYMBOL = P_SIGN | "[", P_SIGN, "]" | "{", P_SIGN, "}";
-P_SIGN = [NUMBER, "*"], SIGN
+P_SIGN = [NUMBER, "*"], SIGN;
 SIGN = IDENTIFIER | """ IDENTIFIER """;

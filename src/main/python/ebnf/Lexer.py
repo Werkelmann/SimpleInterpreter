@@ -1,4 +1,5 @@
 IDENTIFIER = 'IDENTIFIER'
+NUMBER = 'NUMBER'
 
 # RESERVED SIGNS
 ALTERNATIVE = 'ALTERNATIVE'                     # |
@@ -55,16 +56,29 @@ class Lexer(object):
         return self.current_char is not None
 
     def skip_whitespace(self):
-        while self.has_char and self.current_char.isspace():
+        while self.has_char() and self.current_char.isspace():
             self.advance()
+
+    def skip_comment(self):
+        while self.has_char() and self.current_char != '#':
+            self.advance()
+        self.advance()
 
     def read_identifier(self):
         result = ''
-        while self.has_char and self.current_char.isalnum():
+        while self.has_char() and self.current_char.isalnum():
             result += self.current_char
             self.advance()
 
         return Token(IDENTIFIER, result)
+
+    def read_number(self):
+        result = ''
+        while self.has_char() and self.current_char.isdigit():
+            result += self.current_char
+            self.advance()
+
+        return Token(NUMBER, int(result))
 
     def compare(self, char):
         return self.current_char == char
@@ -74,8 +88,14 @@ class Lexer(object):
             if self.current_char.isspace():
                 self.skip_whitespace()
 
+            if self.compare('#'):
+                self.skip_comment()
+
             if self.current_char.isalpha():
                 return self.read_identifier()
+
+            if self.current_char.isdigit():
+                return self.read_number()
 
             if self.compare('|'):
                 self.advance()
