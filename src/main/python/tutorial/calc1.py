@@ -69,8 +69,8 @@ class Lexer(object):
         self.current_token = None
         self.current_char = self.text[self.position]
 
-    def error(self, message):
-        raise Exception(message.format(
+    def error(self):
+        raise Exception(EXCEPTION_SCANNING.format(
             position=self.position,
             found=self.current_token.value))
 
@@ -186,7 +186,7 @@ class Lexer(object):
                 self.advance()
                 return token
 
-            self.error(EXCEPTION_SCANNING)
+            self.error()
 
         return Token(EOF, None)
 
@@ -284,8 +284,8 @@ class Parser(object):
         self.lexer = lexer
         self.current_token = self.lexer.get_next_token()
 
-    def error(self, message, expected):
-        raise Exception(message.format(
+    def error(self, expected):
+        raise Exception(EXCEPTION_PARSE.format(
             position=self.lexer.position,
             found=self.current_token.type,
             expected=expected
@@ -295,7 +295,7 @@ class Parser(object):
         if self.current_token.type in token_type:
             self.current_token = self.lexer.get_next_token()
         else:
-            self.error(EXCEPTION_PARSE, token_type)
+            self.error(token_type)
 
     def factor(self):
         token = self.current_token
@@ -366,7 +366,7 @@ class Parser(object):
             results.append(self.statement())
 
         if self.current_token.type == ID:
-            self.error(EXCEPTION_PARSE, 'Every other thing')
+            self.error('Every other thing')
 
         return results
 
@@ -443,7 +443,7 @@ class Parser(object):
     def parse(self):
         node = self.program()
         if self.current_token.type != EOF:
-            self.error(EXCEPTION_PARSE, EOF)
+            self.error(EOF)
         return node
 
 ###############################################################################
@@ -687,7 +687,6 @@ class SymbolTableBuilder(NodeVisitor):
 
     def visit_ProcedureDeclaration(self, node):
         pass
-
 
 
 def main():
