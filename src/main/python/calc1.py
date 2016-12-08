@@ -16,6 +16,7 @@ INTEGER_DIV = 'INTEGER_DIV'
 INTEGER_CONST = 'INTEGER_CONST'
 LEFT_PARENTHESIS = 'LEFT_PARENTHESIS'
 OPERATOR = 'OPERATOR'
+PROCEDURE = 'PROCEDURE'
 PROGRAM = 'PROGRAM'
 REAL = 'REAL'
 REAL_CONST = 'REAL_CONST'
@@ -54,8 +55,9 @@ RESERVED_KEYWORDS = {
     BEGIN: Token(BEGIN, BEGIN),
     END: Token(END, END),
     INTEGER: Token(INTEGER, INTEGER),
-    REAL: Token(REAL, REAL),
+    PROCEDURE: Token(PROCEDURE, PROCEDURE),
     PROGRAM: Token(PROGRAM, PROGRAM),
+    REAL: Token(REAL, REAL),
     VAR: Token(VAR, VAR),
 }
 
@@ -271,6 +273,12 @@ class Num(AST):
         self.value = token.value
 
 
+class ProcedureDeclaration(AST):
+    def __init__(self, proc_name, block_node):
+        self.proc_name = proc_name
+        self.block_node = block_node
+
+
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
@@ -415,6 +423,16 @@ class Parser(object):
                 declarations.extend(var_decl)
                 self.eat(SEMICOLON)
 
+        while self.current_token.type == PROCEDURE:
+            self.eat(PROCEDURE)
+            proc_name = self.current_token.value
+            self.eat(ID)
+            self.eat(SEMICOLON)
+            block_node = self.block()
+            proc_decl = ProcedureDeclaration(proc_name, block_node)
+            declarations.append(proc_decl)
+            self.eat(SEMICOLON)
+
         return declarations
 
     def block(self):
@@ -502,6 +520,9 @@ class Interpreter(NodeVisitor):
         pass
 
     def visit_Type(self, node):
+        pass
+
+    def visit_ProcedureDeclaration(self, node):
         pass
 
     def interpret(self):
@@ -663,6 +684,9 @@ class SymbolTableBuilder(NodeVisitor):
         var_symbol = self.symbol_table.lookup(var_name)
         if var_symbol is None:
             raise NameError(repr(var_name))
+
+    def visit_ProcedureDeclaration(self, node):
+        pass
 
 
 
