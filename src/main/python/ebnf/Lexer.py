@@ -1,3 +1,5 @@
+from enum import Enum
+
 IDENTIFIER = 'IDENTIFIER'
 NUMBER = 'NUMBER'
 
@@ -16,6 +18,12 @@ STAR = 'STAR'                                   # *
 # OTHER
 EOF = 'EOF'
 EXCEPTION_SCANNING = 'Error while scanning at {position}. Found: {found}'
+
+
+class State(Enum):
+    is_reading_terminal = 0
+    wait_for_second_quotation_mark = 1
+    wait_for_quotation_mark = 2
 
 
 class Token(object):
@@ -39,6 +47,7 @@ class Lexer(object):
         self.position = 0
         self.current_token = None
         self.current_char = self.text[self.position]
+        self.state = State.wait_for_quotation_mark
 
     def error(self):
         raise Exception(EXCEPTION_SCANNING.format(
@@ -64,13 +73,22 @@ class Lexer(object):
             self.advance()
         self.advance()
 
+    def read_terminal(self):
+        result = ''
+        while self.has_char() and self.current_char != '"':
+            result += self.current_char
+            self.advance()
+
+        self.state = State.wait_for_second_quotation_mark
+        return self.return_token(Token(IDENTIFIER, result))
+
     def read_identifier(self):
         result = ''
         while self.has_char() and self.current_char.isalnum():
             result += self.current_char
             self.advance()
 
-        return Token(IDENTIFIER, result)
+        return self.return_token(Token(IDENTIFIER, result))
 
     def read_number(self):
         result = ''
@@ -78,18 +96,28 @@ class Lexer(object):
             result += self.current_char
             self.advance()
 
-        return Token(NUMBER, int(result))
+        return self.return_token(Token(NUMBER, int(result)))
 
     def compare(self, char):
         return self.current_char == char
 
+    def return_token(self, token):
+        self.current_token = token
+        return token
+
     def get_next_token(self):
         while self.has_char():
-            if self.current_char.isspace():
-                self.skip_whitespace()
+            self.skip_whitespace()
+            if not self.has_char():
+                break
 
             if self.compare('#'):
+                self.advance()
                 self.skip_comment()
+                continue
+
+            if self.state == State.is_reading_terminal:
+                return self.read_terminal()
 
             if self.current_char.isalpha():
                 return self.read_identifier()
@@ -99,45 +127,50 @@ class Lexer(object):
 
             if self.compare('|'):
                 self.advance()
-                return Token(ALTERNATIVE, ALTERNATIVE)
+                return self.return_token(Token(ALTERNATIVE, ALTERNATIVE))
 
             if self.compare('{'):
                 self.advance()
-                return Token(BRACKET_CURLY_OPEN, BRACKET_CURLY_OPEN)
+                return self.return_token(Token(BRACKET_CURLY_OPEN, BRACKET_CURLY_OPEN))
 
             if self.compare('}'):
                 self.advance()
-                return Token(BRACKET_CURLY_CLOSE, BRACKET_CURLY_CLOSE)
+                return self.return_token(Token(BRACKET_CURLY_CLOSE, BRACKET_CURLY_CLOSE))
 
             if self.compare('['):
                 self.advance()
-                return Token(BRACKET_SQUARE_OPEN, BRACKET_SQUARE_OPEN)
+                return self.return_token(Token(BRACKET_SQUARE_OPEN, BRACKET_SQUARE_OPEN))
 
             if self.compare(']'):
                 self.advance()
-                return Token(BRACKET_SQUARE_CLOSE, BRACKET_SQUARE_CLOSE)
+                return self.return_token(Token(BRACKET_SQUARE_CLOSE, BRACKET_SQUARE_CLOSE))
 
             if self.compare(','):
                 self.advance()
-                return Token(COMMA, COMMA)
+                return self.return_token(Token(COMMA, COMMA))
 
             if self.compare('='):
                 self.advance()
-                return Token(EQUAL, EQUAL)
+                return self.return_token(Token(EQUAL, EQUAL))
 
             if self.compare('"'):
                 self.advance()
-                return Token(QUOTATION_MARK, QUOTATION_MARK)
+                if self.state == State.wait_for_quotation_mark:
+                    self.state = State.is_reading_terminal
+                elif self.state == State.wait_for_second_quotation_mark:
+                    self.state = State.wait_for_quotation_mark
+                elif self.state == State.is_reading_terminal:
+                    self.error()
+                return self.return_token(Token(QUOTATION_MARK, QUOTATION_MARK))
 
             if self.compare(';'):
                 self.advance()
-                return Token(SEMICOLON, SEMICOLON)
+                return self.return_token(Token(SEMICOLON, SEMICOLON))
 
             if self.compare('*'):
                 self.advance()
-                return Token(STAR, STAR)
+                return self.return_token(Token(STAR, STAR))
 
             self.error()
 
-        return Token(EOF, EOF)
-
+        return self.return_token(Token(EOF, EOF))

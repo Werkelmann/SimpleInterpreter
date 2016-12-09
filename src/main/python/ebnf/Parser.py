@@ -27,8 +27,12 @@ class Rule(AST):
 
 class Definition(AST):
     def __init__(self):
+        self.symbol_lists = []
+
+
+class SymbolList(AST):
+    def __init__(self):
         self.symbols = []
-        self.definitions = []
 
 
 class Symbol(AST):
@@ -56,11 +60,17 @@ class Sign(AST):
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
+        self.position = 0
+        self.current_token = None
+        self.next_token()
+
+    def next_token(self):
         self.current_token = self.lexer.get_next_token()
+        self.position += 1
 
     def error(self, expected):
         raise Exception(EXCEPTION_PARSE.format(
-            position=self.lexer.position,
+            position=self.position,
             found=self.current_token.type,
             expected=expected
         ))
@@ -68,7 +78,7 @@ class Parser(object):
     def eat(self, *token_types):
         if self.current_token.type not in token_types:
             self.error(token_types)
-        self.current_token = self.lexer.get_next_token()
+        self.next_token()
 
     def sign(self):
         if self.current_token.type == QUOTATION_MARK:
@@ -108,17 +118,22 @@ class Parser(object):
 
         return PSign(self.p_sign())
 
-    def definition(self):
-        definition = Definition()
-        definition.symbols.append(self.symbol())
+    def symbol_list(self):
+        sym_list = [self.symbol()]
 
         while self.current_token.type == COMMA:
             self.eat(COMMA)
-            definition.symbols.append(self.symbol())
+            sym_list.append(self.symbol())
+
+        return sym_list
+
+    def definition(self):
+        definition = Definition()
+        definition.symbol_lists.append(self.symbol_list())
 
         while self.current_token.type == ALTERNATIVE:
             self.eat(ALTERNATIVE)
-            definition.definitions.append(self.definition())
+            definition.symbol_lists.append(self.symbol_list())
 
         return definition
 

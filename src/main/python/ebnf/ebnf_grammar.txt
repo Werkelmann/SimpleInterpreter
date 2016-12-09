@@ -1,6 +1,7 @@
-PROGRAM = RULE, {RULE};
-RULE = IDENTIFIER, "=", DEFINITION, ";";   #EQ for =, SEM for ; but this gives a parsing error#
-DEFINITION = SYMBOL, {",", SYMBOL}, {"|", DEFINITION};
-SYMBOL = P_SIGN | "[", P_SIGN, "]" | "{", P_SIGN, "}";
-P_SIGN = [NUMBER, "*"], SIGN;
-SIGN = IDENTIFIER | """ IDENTIFIER """;
+PROGRAM = RULE, {RULE};                                     # 8 #
+RULE = IDENTIFIER, "=", DEFINITION, ";";                    # 22 #
+DEFINITION = SYMBOLLIST, {"|", SYMBOLLIST};                 # 34 #
+SYMBOL_LIST = SYMBOL, {",", SYMBOL};                        # 46 #
+SYMBOL = P_SIGN | "[", P_SIGN, "]" | "{", P_SIGN, "}";      # 70 #
+P_SIGN = [NUMBER, "*"], SIGN;                               #  #
+SIGN = IDENTIFIER | "QUOT" IDENTIFIER "QUOT";               #  QUOT = "#
