@@ -21,9 +21,9 @@ EXCEPTION_SCANNING = 'Error while scanning at {position}. Found: {found}'
 
 
 class State(Enum):
-    is_reading_terminal = 0
-    wait_for_second_quotation_mark = 1
-    wait_for_quotation_mark = 2
+    IS_READING_TERMINAL = 'IS_READING_TERMINAL'
+    WAIT_FOR_SECOND_QUOTATION_MARK = 'WAIT_FOR_SECOND_QUOTATION_MARK'
+    WAIT_FOR_QUOTATION_MARK = 'WAIT_FOR_QUOTATION_MARK'
 
 
 class Token(object):
@@ -47,7 +47,7 @@ class Lexer(object):
         self.position = 0
         self.current_token = None
         self.current_char = self.text[self.position]
-        self.state = State.wait_for_quotation_mark
+        self.state = State.WAIT_FOR_QUOTATION_MARK
 
     def error(self):
         raise Exception(EXCEPTION_SCANNING.format(
@@ -79,7 +79,7 @@ class Lexer(object):
             result += self.current_char
             self.advance()
 
-        self.state = State.wait_for_second_quotation_mark
+        self.state = State.WAIT_FOR_SECOND_QUOTATION_MARK
         return self.return_token(Token(IDENTIFIER, result))
 
     def read_identifier(self):
@@ -116,7 +116,7 @@ class Lexer(object):
                 self.skip_comment()
                 continue
 
-            if self.state == State.is_reading_terminal:
+            if self.state == State.IS_READING_TERMINAL:
                 return self.read_terminal()
 
             if self.current_char.isalpha():
@@ -155,12 +155,7 @@ class Lexer(object):
 
             if self.compare('"'):
                 self.advance()
-                if self.state == State.wait_for_quotation_mark:
-                    self.state = State.is_reading_terminal
-                elif self.state == State.wait_for_second_quotation_mark:
-                    self.state = State.wait_for_quotation_mark
-                elif self.state == State.is_reading_terminal:
-                    self.error()
+                self.switch_state()
                 return self.return_token(Token(QUOTATION_MARK, QUOTATION_MARK))
 
             if self.compare(';'):
@@ -174,3 +169,11 @@ class Lexer(object):
             self.error()
 
         return self.return_token(Token(EOF, EOF))
+
+    def switch_state(self):
+        if self.state == State.WAIT_FOR_QUOTATION_MARK:
+            self.state = State.IS_READING_TERMINAL
+        elif self.state == State.WAIT_FOR_SECOND_QUOTATION_MARK:
+            self.state = State.WAIT_FOR_QUOTATION_MARK
+        elif self.state == State.IS_READING_TERMINAL:
+            self.error()

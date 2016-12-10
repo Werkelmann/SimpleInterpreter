@@ -112,3 +112,38 @@ class TestLexer(unittest.TestCase):
         token = lexer.get_next_token()
         self.assertEquals(EOF, token.type)
         self.assertEquals('EOF', token.value)
+
+    def test_bug_with_quotation(self):
+        lexer = Lexer('A = "word" B;')
+
+        token = lexer.get_next_token()
+        self.assertEquals(IDENTIFIER, token.type)
+        self.assertEquals('A', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(EQUAL, token.type)
+        self.assertEquals('EQUAL', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(QUOTATION_MARK, token.type)
+        self.assertEquals('QUOTATION_MARK', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(IDENTIFIER, token.type)
+        self.assertEquals('word', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(QUOTATION_MARK, token.type)
+        self.assertEquals('QUOTATION_MARK', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(IDENTIFIER, token.type)
+        self.assertEquals('B', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(SEMICOLON, token.type)
+        self.assertEquals('SEMICOLON', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(EOF, token.type)
+        self.assertEquals('EOF', token.value)

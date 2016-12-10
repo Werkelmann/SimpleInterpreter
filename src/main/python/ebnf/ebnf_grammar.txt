@@ -1,3 +1,5 @@
+# http://www.ics.uci.edu/~pattis/misc/ebnf2.pdf #
+
 PROGRAM = {RULE};
 RULE = LHS "=" RHS ";";
 RHS = SEQUENCE {"|" SEQUENCE};

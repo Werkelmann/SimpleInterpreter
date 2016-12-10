@@ -1,5 +1,4 @@
 
-from Lexer import *
 from Parser import *
 import unittest
 
@@ -65,3 +64,13 @@ class TestParser(unittest.TestCase):
         self.assertEqual(Program, type(tree))
         self.assertEqual(6, tree.rules.__len__())
 
+    def test_correct_type_of_identifiers(self):
+        prog = 'A = "word" B;'
+        tree = self.init_parser(prog).parse()
+        self.assertEqual(1, tree.rules.__len__())
+        self.assertEqual('A', tree.rules[0].identifier.name)
+        self.assertEqual(ID_TYPE_NAME, tree.rules[0].identifier.type)
+        self.assertEqual('word', tree.rules[0].right.sequences[0].values[0].name)
+        self.assertEqual(ID_TYPE_TERMINAL, tree.rules[0].right.sequences[0].values[0].type)
+        self.assertEqual('B', tree.rules[0].right.sequences[0].values[1].name)
+        self.assertEqual(ID_TYPE_NON_TERMINAL, tree.rules[0].right.sequences[0].values[1].type)

@@ -1,6 +1,9 @@
 from Lexer import *
 
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found} Expected: {expected}'
+ID_TYPE_NAME = 'name'
+ID_TYPE_TERMINAL = 'terminal'
+ID_TYPE_NON_TERMINAL = 'nonterminal'
 
 
 class AST(object):
@@ -76,8 +79,9 @@ class Repetition(AST):
 
 
 class Identifier(AST):
-    def __init__(self, name):
+    def __init__(self, name, id_type):
         self.name = name
+        self.type = id_type
 
     def __str__(self):
         return 'Identifier: {}'.format(self.name)
@@ -132,12 +136,12 @@ class Parser(object):
                 continue
             if self.current_token.type == QUOTATION_MARK:
                 self.eat(QUOTATION_MARK)
-                sequence.values.append(Identifier(self.current_token.value))
+                sequence.values.append(Identifier(self.current_token.value, ID_TYPE_TERMINAL))
                 self.eat(IDENTIFIER)
                 self.eat(QUOTATION_MARK)
                 continue
             if self.current_token.type == IDENTIFIER:
-                sequence.values.append(Identifier(self.current_token.value))
+                sequence.values.append(Identifier(self.current_token.value, ID_TYPE_NON_TERMINAL))
                 self.eat(IDENTIFIER)
                 continue
             break
@@ -155,7 +159,7 @@ class Parser(object):
         return right
 
     def rule(self):
-        identifier = Identifier(self.current_token.value)
+        identifier = Identifier(self.current_token.value, ID_TYPE_NAME)
         self.eat(IDENTIFIER)
         self.eat(EQUAL)
         right = self.right()
