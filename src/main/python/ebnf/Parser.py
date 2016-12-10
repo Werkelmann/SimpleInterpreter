@@ -18,43 +18,71 @@ class Program(AST):
     def __init__(self):
         self.rules = []
 
+    def __str__(self):
+        return 'Program: {}'.format(self.rules.__repr__())
+
+    __repr__ = __str__
+
 
 class Rule(AST):
-    def __init__(self, identifier, definition):
+    def __init__(self, identifier, right):
         self.identifier = identifier
-        self.definition = definition
+        self.right = right
+
+    def __str__(self):
+        return 'Rule: {} {}'.format(self.identifier.__repr__(), self.right.__repr__())
+
+    __repr__ = __str__
 
 
-class Definition(AST):
+class RightSide(AST):
     def __init__(self):
-        self.symbol_lists = []
+        self.sequences = []
+
+    def __str__(self):
+        return 'Right: {}'.format(self.sequences.__repr__())
+
+    __repr__ = __str__
 
 
-class SymbolList(AST):
+class Sequence(AST):
     def __init__(self):
-        self.symbols = []
+        self.values = []
+
+    def __str__(self):
+        return 'Sequence: {}'.format(self.values.__repr__())
+
+    __repr__ = __str__
 
 
-class Symbol(AST):
-    def __init__(self, p_sign, count=1): # 0 for optional, 1 for needed, 2 for any
-        self.p_sign = p_sign
-        self.count = count
+class Option(AST):
+    def __init__(self, right):
+        self.right = right
+
+    def __str__(self):
+        return 'Option: {}'.format(self.right.__repr__())
+
+    __repr__ = __str__
 
 
-class Number(AST):
-    def __init__(self, value):
-        self.value = value
+class Repetition(AST):
+    def __init__(self, right):
+        self.right = right
+
+    def __str__(self):
+        return 'Repetition: {}'.format(self.right.__repr__())
+
+    __repr__ = __str__
 
 
-class PSign(AST):
-    def __init__(self, sign, number=Number(1)):
-        self.sign = sign
-        self.number = number
+class Identifier(AST):
+    def __init__(self, name):
+        self.name = name
 
+    def __str__(self):
+        return 'Identifier: {}'.format(self.name)
 
-class Sign(AST):
-    def __init__(self, identifier):
-        self.identifier = identifier
+    __repr__ = __str__
 
 
 class Parser(object):
@@ -80,70 +108,59 @@ class Parser(object):
             self.error(token_types)
         self.next_token()
 
-    def sign(self):
-        if self.current_token.type == QUOTATION_MARK:
-            self.eat(QUOTATION_MARK)
-            node = Sign(self.current_token.value)
-            self.eat(IDENTIFIER)
-            self.eat(QUOTATION_MARK)
-            return node
+    def repetition(self):
+        self.eat(BRACKET_CURLY_OPEN)
+        repetition = Repetition(self.right())
+        self.eat(BRACKET_CURLY_CLOSE)
+        return repetition
 
-        node = Sign(self.current_token.value)
-        self.eat(IDENTIFIER)
-        return node
+    def option(self):
+        self.eat(BRACKET_SQUARE_OPEN)
+        option = Option(self.right())
+        self.eat(BRACKET_SQUARE_CLOSE)
+        return option
 
-    def p_sign(self):
-        if self.current_token.type == NUMBER:
-            number = Number(self.current_token.value)
-            self.eat(NUMBER)
-            self.eat(STAR)
-            sign = self.sign()
-            return PSign(sign, number)
+    def sequence(self):
+        sequence = Sequence()
 
-        sign = self.sign()
-        return PSign(sign)
+        while self.current_token.type not in (EOF, ALTERNATIVE):
+            if self.current_token.type == BRACKET_CURLY_OPEN:
+                sequence.values.append(self.repetition())
+                continue
+            if self.current_token.type == BRACKET_SQUARE_OPEN:
+                sequence.values.append(self.option())
+                continue
+            if self.current_token.type == QUOTATION_MARK:
+                self.eat(QUOTATION_MARK)
+                sequence.values.append(Identifier(self.current_token.value))
+                self.eat(IDENTIFIER)
+                self.eat(QUOTATION_MARK)
+                continue
+            if self.current_token.type == IDENTIFIER:
+                sequence.values.append(Identifier(self.current_token.value))
+                self.eat(IDENTIFIER)
+                continue
+            break
 
-    def symbol(self):
-        if self.current_token.type == BRACKET_CURLY_OPEN:
-            self.eat(BRACKET_CURLY_OPEN)
-            p_sign = self.p_sign()
-            self.eat(BRACKET_CURLY_CLOSE)
-            return Symbol(p_sign, 2)
+        return sequence
 
-        if self.current_token.type == BRACKET_SQUARE_OPEN:
-            self.eat(BRACKET_SQUARE_OPEN)
-            p_sign = self.p_sign()
-            self.eat(BRACKET_SQUARE_CLOSE)
-            return Symbol(p_sign, 0)
-
-        return PSign(self.p_sign())
-
-    def symbol_list(self):
-        sym_list = [self.symbol()]
-
-        while self.current_token.type == COMMA:
-            self.eat(COMMA)
-            sym_list.append(self.symbol())
-
-        return sym_list
-
-    def definition(self):
-        definition = Definition()
-        definition.symbol_lists.append(self.symbol_list())
+    def right(self):
+        right = RightSide()
+        right.sequences.append(self.sequence())
 
         while self.current_token.type == ALTERNATIVE:
             self.eat(ALTERNATIVE)
-            definition.symbol_lists.append(self.symbol_list())
+            right.sequences.append(self.sequence())
 
-        return definition
+        return right
 
     def rule(self):
-        id = self.current_token.value
+        identifier = Identifier(self.current_token.value)
         self.eat(IDENTIFIER)
         self.eat(EQUAL)
-        definition = self.definition()
+        right = self.right()
         self.eat(SEMICOLON)
-        return Rule(id, definition)
+        return Rule(identifier, right)
 
     def program(self):
         program = Program()

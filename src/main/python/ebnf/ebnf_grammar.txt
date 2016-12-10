@@ -1,7 +1,6 @@
-PROGRAM = RULE, {RULE};                                     # 8 #
-RULE = IDENTIFIER, "=", DEFINITION, ";";                    # 22 #
-DEFINITION = SYMBOLLIST, {"|", SYMBOLLIST};                 # 34 #
-SYMBOL_LIST = SYMBOL, {",", SYMBOL};                        # 46 #
-SYMBOL = P_SIGN | "[", P_SIGN, "]" | "{", P_SIGN, "}";      # 70 #
-P_SIGN = [NUMBER, "*"], SIGN;                               #  #
-SIGN = IDENTIFIER | "QUOT" IDENTIFIER "QUOT";               #  QUOT = "#
+PROGRAM = {RULE};
+RULE = LHS "=" RHS ";";
+RHS = SEQUENCE {"|" SEQUENCE};
+SEQUENCE = {"QUOT" IDENTIFIER "QUOT" | IDENTIFIER | OPTION | REPETITION};
+OPTION = "[" RHS "]";
+REPETITION = "{" RHS "}";
