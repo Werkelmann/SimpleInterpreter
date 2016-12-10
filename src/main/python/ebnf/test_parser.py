@@ -51,6 +51,11 @@ class TestParser(unittest.TestCase):
         tree = self.init_parser(prog).parse()
         self.assertEqual(1, tree.rules.__len__())
 
+    def test_alternatives(self):
+        prog = 'A = A | B | C;'
+        tree = self.init_parser(prog).parse()
+        self.assertEqual(1, tree.rules.__len__())
+
     def load_file(self):
         try:
             return open('src/main/python/ebnf/ebnf_grammar.txt', 'r')
@@ -69,7 +74,7 @@ class TestParser(unittest.TestCase):
         tree = self.init_parser(prog).parse()
         self.assertEqual(1, tree.rules.__len__())
         self.assertEqual('A', tree.rules[0].identifier.name)
-        self.assertEqual(ID_TYPE_NAME, tree.rules[0].identifier.type)
+        self.assertEqual(ID_TYPE_RULE_NAME, tree.rules[0].identifier.type)
         self.assertEqual('word', tree.rules[0].right.sequences[0].values[0].name)
         self.assertEqual(ID_TYPE_TERMINAL, tree.rules[0].right.sequences[0].values[0].type)
         self.assertEqual('B', tree.rules[0].right.sequences[0].values[1].name)

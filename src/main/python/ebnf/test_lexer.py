@@ -147,3 +147,22 @@ class TestLexer(unittest.TestCase):
         token = lexer.get_next_token()
         self.assertEquals(EOF, token.type)
         self.assertEquals('EOF', token.value)
+
+    def test_alternatives(self):
+        lexer = Lexer('A | B')
+
+        token = lexer.get_next_token()
+        self.assertEquals(IDENTIFIER, token.type)
+        self.assertEquals('A', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(ALTERNATIVE, token.type)
+        self.assertEquals('ALTERNATIVE', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(IDENTIFIER, token.type)
+        self.assertEquals('B', token.value)
+
+        token = lexer.get_next_token()
+        self.assertEquals(EOF, token.type)
+        self.assertEquals('EOF', token.value)

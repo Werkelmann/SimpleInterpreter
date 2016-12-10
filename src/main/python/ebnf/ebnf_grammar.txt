@@ -1,7 +1,7 @@
 # http://www.ics.uci.edu/~pattis/misc/ebnf2.pdf #
 
 PROGRAM = {RULE};
-RULE = LHS "=" RHS ";";
+RULE = IDENTIFIER "=" RHS ";";
 RHS = SEQUENCE {"|" SEQUENCE};
 SEQUENCE = {"QUOT" IDENTIFIER "QUOT" | IDENTIFIER | OPTION | REPETITION};
 OPTION = "[" RHS "]";

@@ -1,7 +1,7 @@
 from Lexer import *
 
 EXCEPTION_PARSE = 'Error while parsing at {position}. Found: {found} Expected: {expected}'
-ID_TYPE_NAME = 'name'
+ID_TYPE_RULE_NAME = 'name'
 ID_TYPE_TERMINAL = 'terminal'
 ID_TYPE_NON_TERMINAL = 'nonterminal'
 
@@ -84,7 +84,7 @@ class Identifier(AST):
         self.type = id_type
 
     def __str__(self):
-        return 'Identifier: {}'.format(self.name)
+        return 'Identifier: {} {}'.format(self.name, self.type)
 
     __repr__ = __str__
 
@@ -159,7 +159,7 @@ class Parser(object):
         return right
 
     def rule(self):
-        identifier = Identifier(self.current_token.value, ID_TYPE_NAME)
+        identifier = Identifier(self.current_token.value, ID_TYPE_RULE_NAME)
         self.eat(IDENTIFIER)
         self.eat(EQUAL)
         right = self.right()
